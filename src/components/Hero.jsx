@@ -131,7 +131,7 @@ const Hero = () => {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                     >
-                        Ideate, Innovate, Implement
+                        Ideas Powering Atmanirbhar Bharat
                     </motion.p>
 
                     <motion.div
