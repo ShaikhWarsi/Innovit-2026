@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useIsMobile } from '../hooks/useIsMobile';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const location = useLocation();
     const isMobile = useIsMobile();
+    const isHome = location.pathname === '/';
+
+    const getLink = (hash) => {
+        return isHome ? hash : `/${hash}`;
+    };
 
     const handleRegister = () => {
         window.open('https://forms.gle/P2wFMiZ9xrms9rg67', '_blank');
@@ -13,11 +20,12 @@ const Navbar = () => {
     };
 
     const navLinks = [
-        { href: '#home', label: 'Home' },
-        { href: '#timeline', label: 'Timeline' },
-        { href: '#rounds', label: 'Rounds' },
-        { href: '#prizes', label: 'Prizes' },
-        { href: '#mentoring', label: 'Mentoring' }
+        { href: '#home', label: 'Home', isHash: true },
+        { href: '#timeline', label: 'Timeline', isHash: true },
+        { href: '#rounds', label: 'Rounds', isHash: true },
+        { href: '#prizes', label: 'Prizes', isHash: true },
+        { href: '#mentoring', label: 'Mentoring', isHash: true },
+        { href: '/contact', label: 'Contact & FAQs', isHash: false }
     ];
 
     return (
@@ -42,13 +50,23 @@ const Navbar = () => {
                     {/* Desktop Navigation Links */}
                     <div className="hidden md:flex items-center gap-8">
                         {navLinks.map(link => (
-                            <a
-                                key={link.href}
-                                href={link.href}
-                                className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors duration-200"
-                            >
-                                {link.label}
-                            </a>
+                            link.isHash ? (
+                                <a
+                                    key={link.href}
+                                    href={getLink(link.href)}
+                                    className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors duration-200"
+                                >
+                                    {link.label}
+                                </a>
+                            ) : (
+                                <Link
+                                    key={link.href}
+                                    to={link.href}
+                                    className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors duration-200"
+                                >
+                                    {link.label}
+                                </Link>
+                            )
                         ))}
                     </div>
 
@@ -83,14 +101,25 @@ const Navbar = () => {
                         <div className="glass-strong p-4 rounded-2xl border border-yellow-500/20 shadow-2xl backdrop-blur-xl">
                             <div className="flex flex-col gap-3">
                                 {navLinks.map(link => (
-                                    <a
-                                        key={link.href}
-                                        href={link.href}
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors py-2 px-3 rounded-lg hover:bg-yellow-500/10"
-                                    >
-                                        {link.label}
-                                    </a>
+                                    link.isHash ? (
+                                        <a
+                                            key={link.href}
+                                            href={getLink(link.href)}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors py-2 px-3 rounded-lg hover:bg-yellow-500/10"
+                                        >
+                                            {link.label}
+                                        </a>
+                                    ) : (
+                                        <Link
+                                            key={link.href}
+                                            to={link.href}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors py-2 px-3 rounded-lg hover:bg-yellow-500/10"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    )
                                 ))}
                                 <button
                                     onClick={handleRegister}
