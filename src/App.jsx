@@ -6,12 +6,16 @@ import Prizes from './components/Prizes';
 import Mentoring from './components/Mentoring';
 import Footer from './components/Footer';
 import { GlobalSpotlight } from './components/MagicEffects';
+import { useIsMobile } from './hooks/useIsMobile';
 
 function App() {
+  const isMobile = useIsMobile();
+
   return (
     <div className="min-h-screen">
+      {/* Disable GlobalSpotlight on mobile for performance */}
       <GlobalSpotlight
-        enabled={true}
+        enabled={!isMobile}
         spotlightRadius={300}
         glowColor="245, 188, 34"
         targetSelector=".magic-card"

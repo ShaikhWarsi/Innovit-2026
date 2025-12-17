@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import { Trophy, Gift, Award, Users, Code, BookOpen, Star, Sparkles } from 'lucide-react';
 import { ParticleCard } from './MagicEffects';
 import ElectricBorder from './ElectricBorder';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const Prizes = () => {
+    const isMobile = useIsMobile();
+
     const prizeCategories = [
         {
             icon: <Trophy className="w-8 h-8" />,
@@ -105,12 +108,12 @@ const Prizes = () => {
                             >
                                 <ParticleCard
                                     className="magic-card"
-                                    particleCount={8}
+                                    particleCount={isMobile ? 3 : 8}
                                     glowColor={index === 0 ? '245, 188, 34' : index === 1 ? '245, 188, 34' : index === 2 ? '255, 215, 0' : '245, 188, 34'}
-                                    enableTilt={true}
-                                    enableMagnetism={true}
-                                    clickEffect={true}
-                                    enableBorderGlow={true}
+                                    enableTilt={!isMobile}
+                                    enableMagnetism={!isMobile}
+                                    clickEffect={!isMobile}
+                                    enableBorderGlow={!isMobile}
                                 >
                                     <motion.div
                                         className="glass-strong p-6 rounded-2xl h-full"

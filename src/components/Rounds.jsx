@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, Code, Trophy, ChevronDown, ChevronUp, FileText, Video, Github, Presentation } from 'lucide-react';
 import { ParticleCard } from './MagicEffects';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const Rounds = () => {
+    const isMobile = useIsMobile();
     const [expandedRound, setExpandedRound] = useState(null);
 
     const rounds = [
@@ -141,12 +143,12 @@ const Rounds = () => {
                         >
                             <ParticleCard
                                 className="magic-card"
-                                particleCount={10}
+                                particleCount={isMobile ? 4 : 10}
                                 glowColor="139, 92, 246"
-                                enableTilt={true}
-                                enableMagnetism={true}
-                                clickEffect={true}
-                                enableBorderGlow={true}
+                                enableTilt={!isMobile}
+                                enableMagnetism={!isMobile}
+                                clickEffect={!isMobile}
+                                enableBorderGlow={!isMobile}
                             >
                                 <motion.div
                                     className={`glass-strong p-4 md:p-5 rounded-2xl cursor-pointer transition-all duration-300 ${expandedRound === round.id ? 'ring-2 ring-offset-2 ring-offset-gray-900' : ''

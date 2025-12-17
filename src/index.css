@@ -336,4 +336,55 @@
   .timeline-line {
     left: 20px;
   }
+
+  /* Reduce backdrop-filter blur on mobile for better performance */
+  .glass {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .glass-strong {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  /* Simplify animations on mobile */
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(245, 188, 34, 0.2);
+  }
+
+  /* Reduce particle animation complexity */
+  .particle {
+    animation-duration: 25s;
+  }
+}
+
+/* Reduced Motion Support for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .particle {
+    animation: none;
+  }
+
+  .float-animation {
+    animation: none;
+  }
+
+  .pulse-glow {
+    animation: none;
+  }
+
+  .animated-gradient {
+    animation: none;
+    background: linear-gradient(-45deg, #f5bc22, #ffd700);
+  }
 }

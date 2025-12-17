@@ -5,8 +5,11 @@ import { Link } from 'react-scroll';
 import ElectricBorder from './ElectricBorder';
 import { ParticleCard } from './MagicEffects';
 import LaserFlow from './LaserFlow';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const Hero = () => {
+    const isMobile = useIsMobile();
+
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
         hours: 0,
@@ -34,8 +37,9 @@ const Hero = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // Create floating particles
-    const particles = Array.from({ length: 30 }, (_, i) => ({
+    // Create floating particles - reduced count on mobile for performance
+    const particleCount = isMobile ? 6 : 30;
+    const particles = Array.from({ length: particleCount }, (_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
         animationDelay: `${Math.random() * 20}s`,
@@ -44,28 +48,35 @@ const Hero = () => {
 
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 px-4">
-            {/* LaserFlow Animated Background */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-                <LaserFlow
-                    color="#f5bc22"
-                    horizontalSizing={1.29}
-                    verticalSizing={3.9}
-                    wispDensity={0.7}
-                    wispSpeed={16.5}
-                    wispIntensity={3.2}
-                    flowSpeed={0.72}
-                    flowStrength={0.27}
-                    fogIntensity={0.12}
-                    fogScale={0.34}
-                    fogFallSpeed={0.61}
-                    decay={1.12}
-                    falloffStart={1.16}
-                    horizontalBeamOffset={0.0}
-                    verticalBeamOffset={-0.45}
-                    mouseTiltStrength={0.01}
-                    mouseSmoothTime={0.0}
-                />
-            </div>
+            {/* LaserFlow Animated Background - Desktop Only for Performance */}
+            {!isMobile && (
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    <LaserFlow
+                        color="#f5bc22"
+                        horizontalSizing={1.29}
+                        verticalSizing={3.9}
+                        wispDensity={0.7}
+                        wispSpeed={16.5}
+                        wispIntensity={3.2}
+                        flowSpeed={0.72}
+                        flowStrength={0.27}
+                        fogIntensity={0.12}
+                        fogScale={0.34}
+                        fogFallSpeed={0.61}
+                        decay={1.12}
+                        falloffStart={1.16}
+                        horizontalBeamOffset={0.0}
+                        verticalBeamOffset={-0.45}
+                        mouseTiltStrength={0.01}
+                        mouseSmoothTime={0.0}
+                    />
+                </div>
+            )}
+
+            {/* Static gradient background for mobile */}
+            {isMobile && (
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-yellow-900/10 via-transparent to-yellow-900/5" />
+            )}
 
             {/* Gradient Overlays for Text Visibility */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40 z-[1]"></div>
@@ -144,9 +155,6 @@ const Hero = () => {
                             <span className="text-yellow-400">🏆</span> Hybrid Mode
                         </div>
                         <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
-                            <span className="text-yellow-400">🎯</span> Blockchain Focus
-                        </div>
-                        <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
                             <span className="text-yellow-400">📅</span> Finale: Feb 19, 2026
                         </div>
                     </motion.div>
@@ -176,12 +184,12 @@ const Hero = () => {
                                 >
                                     <ParticleCard
                                         className="magic-card"
-                                        particleCount={6}
+                                        particleCount={isMobile ? 3 : 6}
                                         glowColor={item.color.replace('#', '').match(/.{2}/g).map(x => parseInt(x, 16)).join(', ')}
-                                        enableTilt={true}
+                                        enableTilt={!isMobile}
                                         enableMagnetism={false}
-                                        clickEffect={true}
-                                        enableBorderGlow={true}
+                                        clickEffect={!isMobile}
+                                        enableBorderGlow={!isMobile}
                                     >
                                         <div className="glass-strong p-2 sm:p-3 md:p-4 rounded-xl min-w-[60px] sm:min-w-[70px] md:min-w-[85px]">
                                             <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold gradient-text mb-1">

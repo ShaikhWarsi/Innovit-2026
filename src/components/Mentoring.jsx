@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Target, Zap, MessageCircle, Award } from 'lucide-react';
 import { ParticleCard } from './MagicEffects';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const Mentoring = () => {
+    const isMobile = useIsMobile();
+
     const mentoringFeatures = [
         {
             icon: <Target className="w-6 h-6" />,
@@ -105,12 +108,12 @@ const Mentoring = () => {
                             <ParticleCard
                                 key={index}
                                 className="magic-card"
-                                particleCount={6}
+                                particleCount={isMobile ? 3 : 6}
                                 glowColor="139, 92, 246"
-                                enableTilt={true}
-                                enableMagnetism={true}
-                                clickEffect={true}
-                                enableBorderGlow={true}
+                                enableTilt={!isMobile}
+                                enableMagnetism={!isMobile}
+                                clickEffect={!isMobile}
+                                enableBorderGlow={!isMobile}
                             >
                                 <motion.div
                                     className="glass-strong p-6 rounded-2xl card-hover"
