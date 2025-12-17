@@ -18,31 +18,42 @@ function App() {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen">
-      {/* Navbar */}
-      <Navbar />
+    <BrowserRouter>
+      <div className="min-h-screen">
+        {/* Navbar */}
+        <Navbar />
 
-      {/* Register Toast Notification */}
-      <RegisterToast />
+        {/* Register Toast Notification */}
+        <RegisterToast />
 
-      {/* WhatsApp Float Button */}
-      <WhatsAppFloat />
+        {/* WhatsApp Float Button */}
+        <WhatsAppFloat />
 
-      {/* Disable GlobalSpotlight on mobile for performance */}
-      <GlobalSpotlight
-        enabled={!isMobile}
-        spotlightRadius={300}
-        glowColor="245, 188, 34"
-        targetSelector=".magic-card"
-      />
-      <Hero />
-      <Timeline />
-      <LiveStream />
-      <Rounds />
-      <Mentoring />
-      <Prizes />
-      <Footer />
-    </div>
+        {/* Disable GlobalSpotlight on mobile for performance */}
+        <GlobalSpotlight
+          enabled={!isMobile}
+          spotlightRadius={300}
+          glowColor="245, 188, 34"
+          targetSelector=".magic-card"
+        />
+
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Hero />
+              <Timeline />
+              <LiveStream />
+              <Rounds />
+              <Mentoring />
+              <Prizes />
+            </>
+          } />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 
