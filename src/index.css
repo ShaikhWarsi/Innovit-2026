@@ -289,23 +289,24 @@
   }
 }
 
+/* Particle float animation - Disabled on mobile for performance */
 @keyframes particle-float {
-  0% {
-    transform: translateY(100vh) translateX(0);
-    opacity: 0;
-  }
 
-  10% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
+  0%,
   100% {
-    transform: translateY(-100vh) translateX(100px);
-    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+  }
+
+  75% {
+    transform: translateY(-30px) translateX(5px);
   }
 }
 

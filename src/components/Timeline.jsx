@@ -159,11 +159,11 @@ const Timeline = () => {
                                 {/* Content Card */}
                                 <div className={`flex-1 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
                                     <ElectricBorder
-                                        color={colorHex[event.color]}
-                                        speed={event.highlight ? 1.5 : 1}
-                                        chaos={event.highlight ? 0.8 : 0.5}
-                                        thickness={event.highlight ? 2.5 : 2}
-                                        style={{ borderRadius: 16 }}
+                                        color={event.highlight ? '#f5bc22' : '#ffd700'}
+                                        speed={event.highlight ? 0.4 : 0.3}
+                                        chaos={0.3}
+                                        thickness={event.highlight ? 2 : 1}
+                                        className="w-full"
                                     >
                                         <ParticleCard
                                             className="magic-card"

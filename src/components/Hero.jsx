@@ -100,8 +100,8 @@ const Hero = () => {
                 }}
             />
 
-            {/* Content */}
-            <div className="w-full max-w-6xl mx-auto relative z-10 text-center">
+            {/* Content Container with proper spacing */}
+            <div className="relative z-10 w-full max-w-6xl mx-auto text-center pt-24 sm:pt-20">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -121,54 +121,66 @@ const Hero = () => {
                     {/* Main Title */}
                     <motion.h1
                         className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-tight"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
+                        initial={isMobile ? {} : { opacity: 0, y: 30 }}
+                        animate={isMobile ? {} : { opacity: 1, y: 0 }}
+                        transition={isMobile ? {} : { delay: 0.3, duration: 0.8 }}
                     >
                         <span className="gradient-text block">
-                            <DecryptedText
-                                text="INNOVIT"
-                                animateOn="load"
-                                speed={3}
-                                maxIterations={20}
-                                sequential={true}
-                                revealDirection="start"
-                            />
+                            {isMobile ? (
+                                'INNOVIT'
+                            ) : (
+                                <DecryptedText
+                                    text="INNOVIT"
+                                    animateOn="load"
+                                    speed={3}
+                                    maxIterations={20}
+                                    sequential={true}
+                                    revealDirection="start"
+                                />
+                            )}
                         </span>
                         <span className="gradient-text-cyber block text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-2">
-                            <DecryptedText
-                                text="2026"
-                                animateOn="load"
-                                speed={3}
-                                maxIterations={15}
-                                sequential={true}
-                                revealDirection="start"
-                            />
+                            {isMobile ? (
+                                '2026'
+                            ) : (
+                                <DecryptedText
+                                    text="2026"
+                                    animateOn="load"
+                                    speed={3}
+                                    maxIterations={15}
+                                    sequential={true}
+                                    revealDirection="start"
+                                />
+                            )}
                         </span>
                     </motion.h1>
 
                     {/* Subtitle */}
                     <motion.p
                         className="text-lg sm:text-xl md:text-2xl text-[#fff1ce] mb-8 max-w-2xl mx-auto"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.8 }}
+                        initial={isMobile ? {} : { opacity: 0, y: 20 }}
+                        animate={isMobile ? {} : { opacity: 1, y: 0 }}
+                        transition={isMobile ? {} : { delay: 0.5, duration: 0.8 }}
                     >
-                        <DecryptedText
-                            text="Ideas Powering Atmanirbhar Bharat"
-                            animateOn="load"
-                            speed={3}
-                            maxIterations={18}
-                            sequential={true}
-                            revealDirection="start"
-                        />
+                        {isMobile ? (
+                            'Ideas Powering Atmanirbhar Bharat'
+                        ) : (
+                            <DecryptedText
+                                text="Ideas Powering Atmanirbhar Bharat"
+                                animateOn="load"
+                                speed={3}
+                                maxIterations={18}
+                                sequential={true}
+                                revealDirection="start"
+                            />
+                        )}
                     </motion.p>
 
                     <motion.div
                         className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm px-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
+                        initial={isMobile ? {} : { opacity: 0 }}
+                        animate={isMobile ? {} : { opacity: 1 }}
+                        transition={isMobile ? {} : { delay: 0.6 }}
                     >
                         <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
                             <span className="text-yellow-400">🏆</span> Hybrid Mode
@@ -176,14 +188,30 @@ const Hero = () => {
                         <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
                             <span className="text-yellow-400">📅</span> Finale: Feb 19, 2026
                         </div>
+                        <a
+                            href="https://calendar.app.google/GsCcyPz8NqUHFmtt5"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="glass px-3 py-1.5 rounded-lg text-[#fff1ce] hover:text-yellow-400 hover:border-yellow-400/40 transition-all duration-200 cursor-pointer"
+                        >
+                            <span className="text-yellow-400">📆</span> Meeting Schedule
+                        </a>
+                        <a
+                            href="https://youtube.com/live/9uVy8RJVCjM?feature=share"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="glass px-3 py-1.5 rounded-lg text-[#fff1ce] hover:text-yellow-400 hover:border-yellow-400/40 transition-all duration-200 cursor-pointer"
+                        >
+                            <span className="text-yellow-400">📺</span> YouTube Live
+                        </a>
                     </motion.div>
 
                     {/* Countdown Timer */}
                     <motion.div
                         className="mb-8 px-4"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
+                        initial={isMobile ? {} : { opacity: 0, y: 20 }}
+                        animate={isMobile ? {} : { opacity: 1, y: 0 }}
+                        transition={isMobile ? {} : { delay: 0.7 }}
                     >
                         <p className="text-xs sm:text-sm uppercase tracking-wider text-[#fbe9bb] mb-3">Launch Countdown</p>
                         <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
@@ -196,7 +224,7 @@ const Hero = () => {
                                 <ElectricBorder
                                     key={item.label}
                                     color={item.color}
-                                    speed={1}
+                                    speed={0.3}
                                     chaos={0.5}
                                     thickness={2}
                                     style={{ borderRadius: 12 }}
@@ -248,10 +276,10 @@ const Hero = () => {
 
                 {/* Scroll Indicator */}
                 <motion.div
-                    className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1, y: [0, 10, 0] }}
-                    transition={{ delay: 1, duration: 2, repeat: Infinity }}
+                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+                    initial={isMobile ? {} : { opacity: 0 }}
+                    animate={isMobile ? {} : { opacity: 1 }}
+                    transition={isMobile ? {} : { delay: 1.2 }}
                 >
                     <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
                 </motion.div>

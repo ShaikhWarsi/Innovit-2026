@@ -100,10 +100,10 @@ const Prizes = () => {
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
                             <ElectricBorder
-                                color={index === 0 ? '#f5bc22' : index === 1 ? '#f5bc22' : index === 2 ? '#ffd700' : '#f5bc22'}
-                                speed={1.2}
-                                chaos={0.6}
-                                thickness={2}
+                                color={index === 0 ? '#f5bc22' : '#ffd700'}
+                                speed={0.3}
+                                chaos={0.3}
+                                thickness={index === 0 ? 3 : 2}
                                 style={{ borderRadius: 16 }}
                             >
                                 <ParticleCard
