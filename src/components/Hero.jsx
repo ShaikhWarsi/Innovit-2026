@@ -132,54 +132,21 @@ const Hero = () => {
                     <motion.h1
                         className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-tight"
                     >
-                        <span className="gradient-text block">
-                            <Reveal variant={isMobile ? 'fade' : 'clip'} delay={0.2}>
-                                {isMobile ? (
-                                    'INNOVIT'
-                                ) : (
-                                    <DecryptedText
-                                        text="INNOVIT"
-                                        animateOn="load"
-                                        speed={3}
-                                        maxIterations={20}
-                                        sequential={true}
-                                        revealDirection="start"
-                                    />
-                                )}
-                            </Reveal>
-                        </span>
-                        <span className="gradient-text-cyber block text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-2">
-                            <Reveal variant={isMobile ? 'fade' : 'clip'} delay={0.3}>
-                                {isMobile ? (
-                                    '2026'
-                                ) : (
-                                    <DecryptedText
-                                        text="2026"
-                                        animateOn="load"
-                                        speed={3}
-                                        maxIterations={15}
-                                        sequential={true}
-                                        revealDirection="start"
-                                    />
-                                )}
-                            </Reveal>
-                        </span>
+                        <Reveal variant="fade" delay={0.2}>
+                            <span className="gradient-text block">
+                                INNOVIT
+                            </span>
+                        </Reveal>
+                        <Reveal variant="fade" delay={0.3}>
+                            <span className="gradient-text-cyber block text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-2">
+                                2026
+                            </span>
+                        </Reveal>
                     </motion.h1>
 
                     {/* Subtitle */}
                     <Reveal className="text-lg sm:text-xl md:text-2xl text-[#fff1ce] mb-8 max-w-2xl mx-auto" delay={0.4}>
-                        {isMobile ? (
-                            'Ideas Powering Atmanirbhar Bharat'
-                        ) : (
-                            <DecryptedText
-                                text="Ideas Powering Atmanirbhar Bharat"
-                                animateOn="load"
-                                speed={3}
-                                maxIterations={18}
-                                sequential={true}
-                                revealDirection="start"
-                            />
-                        )}
+                        Ideas Powering Atmanirbhar Bharat
                     </Reveal>
 
                     <Reveal className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm px-4" delay={0.5}>
