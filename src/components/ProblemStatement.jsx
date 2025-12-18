@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import DecryptedText from './DecryptedText';
-import ElectricBorder from './ElectricBorder';
 import { ParticleCard } from './MagicEffects';
 import { useIsMobile } from '../hooks/useIsMobile';
 import Reveal from './Reveal';
@@ -14,9 +13,8 @@ const TrackCard = ({ title, colorClass = 'from-yellow-500 to-amber-600', problem
         transition={{ duration: 0.5, delay }}
         className="relative"
     >
-        <ParticleCard className="magic-card" particleCount={8} glowColor="245, 188, 34" enableTilt enableBorderGlow>
-            <ElectricBorder color="#f5bc22" thickness={2} className="rounded-2xl">
-                <div className="glass-strong rounded-2xl p-5 md:p-6">
+        <ParticleCard className="magic-card rounded-2xl" particleCount={8} glowColor="245, 188, 34" enableTilt enableBorderGlow>
+            <div className="glass-strong rounded-2xl p-5 md:p-6">
                     <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-3 bg-gradient-to-r ${colorClass}`}>
                         TRACK
                     </div>
@@ -29,8 +27,7 @@ const TrackCard = ({ title, colorClass = 'from-yellow-500 to-amber-600', problem
                             </li>
                         ))}
                     </ul>
-                </div>
-            </ElectricBorder>
+            </div>
         </ParticleCard>
     </motion.div>
 );
@@ -130,9 +127,7 @@ const ProblemStatement = () => {
                             encryptedClassName="text-yellow-200/50"
                         />
                     </h1>
-                    <p className="text-base md:text-lg text-[#fbe9bb] max-w-2xl mx-auto">
-                        Pick a shiny track and remix the brief — placeholder text you can swap later.
-                    </p>
+                    
                 </motion.div>
 
                 {/* Countdown Overlay (before release) */}
@@ -144,9 +139,8 @@ const ProblemStatement = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
                     >
-                        <ElectricBorder color="#f5bc22" thickness={2} style={{ borderRadius: 16 }}>
-                            <ParticleCard
-                                className="magic-card"
+                        <ParticleCard
+                            className="magic-card rounded-2xl"
                                 particleCount={isMobile ? 3 : 8}
                                 glowColor="245, 188, 34"
                                 enableTilt={!isMobile}
@@ -169,27 +163,17 @@ const ProblemStatement = () => {
                                                 { label: 'Minutes', value: timeLeft.minutes },
                                                 { label: 'Seconds', value: timeLeft.seconds }
                                             ].map((item, index) => (
-                                                <ElectricBorder
-                                                    key={item.label}
-                                                    color="#f5bc22"
-                                                    speed={0.3}
-                                                    chaos={0.4}
-                                                    thickness={2}
-                                                    style={{ borderRadius: 12 }}
-                                                >
-                                                    <div className="glass p-2 sm:p-3 rounded-xl min-w-[64px]">
-                                                        <div className="text-2xl sm:text-3xl font-bold gradient-text">
-                                                            {String(item.value).padStart(2, '0')}
-                                                        </div>
-                                                        <div className="text-[10px] sm:text-xs text-[#fbe9bb] uppercase tracking-wider">{item.label}</div>
+                                                <div key={item.label} className="glass p-2 sm:p-3 rounded-xl min-w-[64px]">
+                                                    <div className="text-2xl sm:text-3xl font-bold gradient-text">
+                                                        {String(item.value).padStart(2, '0')}
                                                     </div>
-                                                </ElectricBorder>
+                                                    <div className="text-[10px] sm:text-xs text-[#fbe9bb] uppercase tracking-wider">{item.label}</div>
+                                                </div>
                                             ))}
                                         </div>
                                     </Reveal>
                                 </div>
-                            </ParticleCard>
-                        </ElectricBorder>
+                        </ParticleCard>
                     </motion.div>
                 )}
 
@@ -203,21 +187,6 @@ const ProblemStatement = () => {
                         <TrackCard key={t.title} title={t.title} colorClass={t.colorClass} problems={t.problems} delay={i * 0.08} />
                     ))}
                 </div>
-
-                {/* Note */}
-                <motion.div
-                    className="max-w-4xl mx-auto px-4 mt-8 md:mt-12"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <ElectricBorder color="#f5bc22" thickness={2} className="rounded-2xl">
-                        <div className="glass-strong rounded-2xl p-5 md:p-6 text-sm md:text-base text-[#fbe9bb]">
-                            Final content will replace this lorem-jazz. Add constraints, deliverables, and sample data links here.
-                        </div>
-                    </ElectricBorder>
-                </motion.div>
             </div>
         </section>
     );

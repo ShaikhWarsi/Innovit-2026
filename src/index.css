@@ -233,6 +233,7 @@
 
   .magic-border-glow:hover {
     box-shadow: 0 4px 20px rgba(245, 188, 34, 0.3), 0 0 30px rgba(var(--glow-color), 0.2);
+    border-radius: 1rem;
   }
 
   .magic-particle::before {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import DecryptedText from './DecryptedText';
-import ElectricBorder from './ElectricBorder';
 import { ParticleCard } from './MagicEffects';
 import { useIsMobile } from '../hooks/useIsMobile';
 import Reveal from './Reveal';
@@ -16,9 +15,8 @@ const PhaseCard = ({ icon, title, badge, children, delay = 0, color = 'from-yell
             enableTilt
             enableBorderGlow
         >
-            <ElectricBorder color="#f5bc22" thickness={2} className="rounded-2xl">
-                <div className="glass-strong rounded-2xl p-5 md:p-6">
-                    <div className="flex items-start gap-3 mb-4">
+            <div className="glass-strong rounded-2xl p-5 md:p-6">
+                <div className="flex items-start gap-3 mb-4">
                         <div className={`p-3 rounded-xl bg-gradient-to-br ${color} flex-shrink-0`}>
                             {icon}
                         </div>
@@ -35,7 +33,6 @@ const PhaseCard = ({ icon, title, badge, children, delay = 0, color = 'from-yell
                         {children}
                     </div>
                 </div>
-            </ElectricBorder>
         </ParticleCard>
     </Reveal>
 );
@@ -60,8 +57,7 @@ const Section = ({ icon, title, items }) => (
 const RulesSection = ({ title, items, delay = 0 }) => (
     <Reveal delay={delay}>
         <ParticleCard className="magic-card" particleCount={6} glowColor="245, 188, 34" enableTilt enableBorderGlow>
-            <ElectricBorder color="#f5bc22" thickness={2} className="rounded-2xl">
-                <div className="glass-strong rounded-2xl p-5 md:p-6">
+            <div className="glass-strong rounded-2xl p-5 md:p-6">
                     <h3 className="text-xl md:text-2xl font-bold mb-3 gradient-text">{title}</h3>
                     <ul className="space-y-2 text-sm md:text-base text-[#fbe9bb]">
                         {items.map((item, i) => (
@@ -72,7 +68,6 @@ const RulesSection = ({ title, items, delay = 0 }) => (
                         ))}
                     </ul>
                 </div>
-            </ElectricBorder>
         </ParticleCard>
     </Reveal>
 );
@@ -370,14 +365,12 @@ const Guidelines = () => {
                 {/* Important Notice */}
                 <Reveal delay={0.5}>
                     <div className="max-w-4xl mx-auto px-4">
-                        <ElectricBorder color="#f5bc22" thickness={2} className="rounded-2xl">
-                            <div className="glass-strong rounded-2xl p-5 md:p-6 flex items-start gap-4">
+                        <div className="glass-strong rounded-2xl p-5 md:p-6 flex items-start gap-4">
                                 <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
                                 <div className="text-sm md:text-base text-[#fbe9bb]">
                                     <strong className="text-yellow-400">Important:</strong> All submissions must be original. Plagiarism or misrepresentation will lead to disqualification. Teams must adhere strictly to deadlines. Judges' decisions are final and binding. Organizers reserve the right to make necessary changes to the schedule.
                                 </div>
                             </div>
-                        </ElectricBorder>
                     </div>
                 </Reveal>
 
