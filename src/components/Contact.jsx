@@ -50,33 +50,133 @@ const Contact = () => {
   const [formStatus, setFormStatus] = useState('idle'); // 'idle', 'submitting', 'success', 'error'
   const [openFAQ, setOpenFAQ] = useState(0);
 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: 'general',
+    message: ''
+  });
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+
+    // Email validation regex check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.message.trim()) newErrors.message = 'Message is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: null
+      }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     setFormStatus('submitting');
-    // Simulate submission
+
+    // Construct mailto link with encoded parameters
+    const subjectLine = `[${formData.subject.toUpperCase()}] Inquiry from ${formData.name}`;
+    const bodyContent = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`;
+
+    const mailtoLink = `mailto:blockchainclub@vitbhopal.ac.in?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(bodyContent)}`;
+
+    // Open default mail client
+    window.location.href = mailtoLink;
+
+    // Show simulated success feedback
     setTimeout(() => {
       setFormStatus('success');
-      // Reset after 3 seconds
+      setFormData({ name: '', email: '', subject: 'general', message: '' });
       setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    }, 1000);
   };
 
   const faqs = [
     {
-      question: "When is the hackathon happening?",
-      answer: "It starts from December 26th, 2025 and would continue in multiple (refer the timeline) and the Grand Finale is on February 19th, 2026."
+      question: "What is INNOVIT 2026?",
+      answer: "INNOVIT 2026 is an innovation-driven, multi-phase hackathon organized by the Blockchain Club, VIT Bhopal University, aligned with the vision of Atmanirbhar Bharat. It encourages students to build technology-based solutions for real-world Indian challenges."
     },
     {
-      question: "Who can participate?",
-      answer: "Anyone with the required interest and will to participate can do it."
+      question: "Who can participate in INNOVIT 2026?",
+      answer: "All students of VIT Bhopal University are eligible to participate. Students from any year, branch, or specialization can take part."
     },
     {
-      question: "Is there a registration fee?",
-      answer: "To be announced."
+      question: "Is attending the orientation session mandatory?",
+      answer: "While not mandatory, attending the orientation session is highly recommended as it includes hackathon guidance, timeline overview, and mentoring insights from SIH 2025 Grand Finalists."
     },
     {
-      question: "What are the prizes?",
-      answer: "To be announced."
+      question: "Who are the mentors for INNOVIT 2026?",
+      answer: (
+        <div className="space-y-2">
+          <p>Mentorship will be provided by:</p>
+          <ul className="list-disc pl-4 space-y-1 text-gray-300/90">
+            <li>SIH 2025 Grand Finalists (Team GATI)</li>
+            <li>Domain experts and invited mentors</li>
+          </ul>
+          <p>Mentoring sessions will be conducted before the Grand Finale.</p>
+        </div>
+      )
+    },
+    {
+      question: "What kind of projects are expected?",
+      answer: (
+        <div className="space-y-2">
+          <p>Projects should be:</p>
+          <ul className="list-disc pl-4 space-y-1 text-gray-300/90">
+            <li>Original and innovative</li>
+            <li>Technology-driven</li>
+            <li>Aligned with Indian challenges</li>
+            <li>Scalable and impactful</li>
+          </ul>
+          <p>Use of open-source tools is allowed with proper attribution.</p>
+        </div>
+      )
+    },
+    {
+      question: "Will there be cash prizes?",
+      answer: "Yes. Cash prizes and exciting goodies will be awarded to top-performing teams. Prize details will be announced at a later stage."
+    },
+    {
+      question: "How can I stay updated about the hackathon?",
+      answer: (
+        <div className="space-y-2">
+          <p>All official updates will be shared through:</p>
+          <ul className="list-disc pl-4 space-y-1 text-gray-300/90">
+            <li>INNOVIT 2026 WhatsApp Community</li>
+            <li>Official website</li>
+            <li>Email notifications</li>
+          </ul>
+          <p>Participants are strongly encouraged to join the WhatsApp group.</p>
+        </div>
+      )
+    },
+    {
+      question: "Where can I register for the orientation session?",
+      answer: "You can register for the orientation session through the Google Form link provided on the website and official announcements."
     }
   ];
 
@@ -106,6 +206,22 @@ const Contact = () => {
           >
             Have questions about the hackathon? We're here to help you on your innovation journey.
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 flex justify-center"
+          >
+            <a
+              href="https://chat.whatsapp.com/KI3mnptIqiR6gTgv0grRJG"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-2 rounded-full font-bold text-black bg-green-500 hover:bg-green-400 transition-all shadow-lg shadow-green-500/20 flex items-center gap-2 hover:scale-105"
+            >
+              <MessageSquare size={18} /> Join Us
+            </a>
+          </motion.div>
         </div>
 
         {/* Tab Switcher */}
@@ -114,8 +230,8 @@ const Contact = () => {
             <button
               onClick={() => setActiveTab('contact')}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeTab === 'contact'
-                  ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20'
-                  : 'text-gray-400 hover:text-white'
+                ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20'
+                : 'text-gray-400 hover:text-white'
                 }`}
             >
               Contact Us
@@ -123,8 +239,8 @@ const Contact = () => {
             <button
               onClick={() => setActiveTab('faq')}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeTab === 'faq'
-                  ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20'
-                  : 'text-gray-400 hover:text-white'
+                ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20'
+                : 'text-gray-400 hover:text-white'
                 }`}
             >
               FAQs
@@ -151,26 +267,36 @@ const Contact = () => {
                       <div className="space-y-2">
                         <label className="text-xs uppercase tracking-wider text-yellow-500/80 font-semibold">Name</label>
                         <input
-                          required
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
                           type="text"
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder-gray-600"
+                          className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-gray-600 ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-white/10 focus:border-yellow-500/50 focus:ring-yellow-500/50'}`}
                           placeholder="John Doe"
                         />
+                        {errors.name && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.name}</p>}
                       </div>
                       <div className="space-y-2">
                         <label className="text-xs uppercase tracking-wider text-yellow-500/80 font-semibold">Email</label>
                         <input
-                          required
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
                           type="email"
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder-gray-600"
+                          className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-gray-600 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-white/10 focus:border-yellow-500/50 focus:ring-yellow-500/50'}`}
                           placeholder="john@example.com"
                         />
+                        {errors.email && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.email}</p>}
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-xs uppercase tracking-wider text-yellow-500/80 font-semibold">Subject</label>
-                      <select className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all [&>option]:bg-[#111] [&>option]:text-white">
+                      <select
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all [&>option]:bg-[#111] [&>option]:text-white">
                         <option value="general">General Inquiry</option>
                         <option value="sponsorship">Sponsorship</option>
                         <option value="technical">Technical Issue</option>
@@ -181,11 +307,14 @@ const Contact = () => {
                     <div className="space-y-2">
                       <label className="text-xs uppercase tracking-wider text-yellow-500/80 font-semibold">Message</label>
                       <textarea
-                        required
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
                         rows={5}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder-gray-600 resize-none"
+                        className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 transition-all placeholder-gray-600 resize-none ${errors.message ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-white/10 focus:border-yellow-500/50 focus:ring-yellow-500/50'}`}
                         placeholder="How can we help you?"
                       />
+                      {errors.message && <p className="text-red-400 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>}
                     </div>
 
                     <button
@@ -193,6 +322,7 @@ const Contact = () => {
                       type="submit"
                       className={`w-full py-4 rounded-lg font-bold text-black transition-all transform active:scale-[0.98] flex items-center justify-center gap-2
                         ${formStatus === 'success' ? 'bg-green-500' : 'bg-gradient-to-r from-yellow-400 to-amber-500 hover:shadow-lg hover:shadow-yellow-500/20'}
+                        ${(formStatus === 'submitting' || formStatus === 'success') ? 'cursor-not-allowed opacity-90' : ''}
                       `}
                     >
                       {formStatus === 'idle' && (
