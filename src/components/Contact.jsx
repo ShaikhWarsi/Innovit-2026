@@ -181,7 +181,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0a0a] pt-24 pb-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen w-full pt-24 pb-12 px-4 relative overflow-hidden">
 
       {/* Background Elements matching site theme */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-yellow-500/5 blur-[120px] pointer-events-none" />

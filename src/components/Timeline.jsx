@@ -116,6 +116,7 @@ const Timeline = () => {
 
     return (
         <section id="timeline" className="section-padding relative overflow-hidden">
+
             {/* Background Elements */}
             <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-500 rounded-full blur-3xl"></div>

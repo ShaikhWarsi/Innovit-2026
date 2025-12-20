@@ -18,6 +18,7 @@ import Preloader from './components/Preloader';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { GlobalSpotlight } from './components/MagicEffects';
 import { useIsMobile } from './hooks/useIsMobile';
+import Background from './components/Background';
 
 function App() {
   const isMobile = useIsMobile();
@@ -30,6 +31,7 @@ function App() {
 
       {/* Main App Content - Hidden until loading completes */}
       <div style={{ opacity: isLoading ? 0 : 1, transition: 'opacity 0.5s ease-in' }}>
+        <Background />
         <BrowserRouter>
           <div className="min-h-screen">
             {/* Navbar */}
