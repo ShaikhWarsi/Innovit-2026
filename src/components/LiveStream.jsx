@@ -23,7 +23,7 @@ const LiveStream = () => {
                         <span className="gradient-text">Watch Live</span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-[#fff1ce]/80 max-w-2xl mx-auto">
-                        Join us live for the INNOVIT 2026 orientation session
+                        Join us for INNOVIT 2026 updates and Phase 1 information
                     </p>
                 </motion.div>
 

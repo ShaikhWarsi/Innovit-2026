@@ -1,10 +1,10 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import DecryptedText from './DecryptedText';
 import { ParticleCard } from './MagicEffects';
 import { useIsMobile } from '../hooks/useIsMobile';
 import Reveal from './Reveal';
-import { Lightbulb, Code, Trophy, Users, AlertCircle, CheckCircle } from 'lucide-react';
+import { Lightbulb, Code, Trophy, Users, AlertCircle, CheckCircle, X, FileText, Send, Download } from 'lucide-react';
 
 const PhaseCard = ({ icon, title, badge, children, delay = 0, color = 'from-yellow-500 to-amber-600' }) => (
     <Reveal delay={delay}>
@@ -17,22 +17,22 @@ const PhaseCard = ({ icon, title, badge, children, delay = 0, color = 'from-yell
         >
             <div className="glass-strong rounded-2xl p-5 md:p-6">
                 <div className="flex items-start gap-3 mb-4">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${color} flex-shrink-0`}>
-                            {icon}
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-xl md:text-2xl font-bold gradient-text">{title}</h3>
-                            {badge && (
-                                <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-2 bg-gradient-to-r ${color}`}>
-                                    {badge}
-                                </div>
-                            )}
-                        </div>
+                    <div className={`p-3 rounded-xl bg-gradient-to-br ${color} flex-shrink-0`}>
+                        {icon}
                     </div>
-                    <div className="text-[#fbe9bb] text-sm md:text-base leading-relaxed space-y-4">
-                        {children}
+                    <div className="flex-1">
+                        <h3 className="text-xl md:text-2xl font-bold gradient-text">{title}</h3>
+                        {badge && (
+                            <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-2 bg-gradient-to-r ${color}`}>
+                                {badge}
+                            </div>
+                        )}
                     </div>
                 </div>
+                <div className="text-[#fbe9bb] text-sm md:text-base leading-relaxed space-y-4">
+                    {children}
+                </div>
+            </div>
         </ParticleCard>
     </Reveal>
 );
@@ -58,22 +58,23 @@ const RulesSection = ({ title, items, delay = 0 }) => (
     <Reveal delay={delay}>
         <ParticleCard className="magic-card" particleCount={6} glowColor="245, 188, 34" enableTilt enableBorderGlow>
             <div className="glass-strong rounded-2xl p-5 md:p-6">
-                    <h3 className="text-xl md:text-2xl font-bold mb-3 gradient-text">{title}</h3>
-                    <ul className="space-y-2 text-sm md:text-base text-[#fbe9bb]">
-                        {items.map((item, i) => (
-                            <li key={i} className="flex gap-2 items-start">
-                                <span className="text-yellow-400 mt-1">•</span>
-                                <span>{item}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <h3 className="text-xl md:text-2xl font-bold mb-3 gradient-text">{title}</h3>
+                <ul className="space-y-2 text-sm md:text-base text-[#fbe9bb]">
+                    {items.map((item, i) => (
+                        <li key={i} className="flex gap-2 items-start">
+                            <span className="text-yellow-400 mt-1">•</span>
+                            <span>{item}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </ParticleCard>
     </Reveal>
 );
 
 const Guidelines = () => {
     const isMobile = useIsMobile();
+    const [activeModal, setActiveModal] = useState(null); // null, 'register', 'submit', 'template'
 
     const rulesData = [
         {
@@ -132,14 +133,7 @@ const Guidelines = () => {
                 'Misconduct toward peers, mentors, or judges prohibited'
             ]
         },
-        {
-            title: 'Logistics & Support',
-            items: [
-                'All timings in IST; updates via official channels',
-                'Questions: contact via WhatsApp or contact page',
-                'Tech issues: retry, capture evidence, and notify team'
-            ]
-        }
+        
     ];
 
     return (
@@ -167,6 +161,75 @@ const Guidelines = () => {
                     </p>
                 </motion.div>
 
+                {/* Registration Instructions Section */}
+                <div className="max-w-6xl mx-auto px-4 mb-12">
+                    <Reveal delay={0.25}>
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-2">How to Participate</h2>
+                            <p className="text-sm md:text-base text-[#fbe9bb]">Step-by-step guide to register and submit your idea</p>
+                        </div>
+                    </Reveal>
+
+                    <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+                        <Reveal delay={0.3}>
+                            <button
+                                onClick={() => setActiveModal('register')}
+                                className="glass-strong p-6 rounded-2xl hover:border-yellow-500/40 transition-all group cursor-pointer"
+                            >
+                                <div className="flex flex-col items-center text-center gap-3">
+                                    <div className="p-4 rounded-xl bg-gradient-to-br from-green-500 to-green-600">
+                                        <FileText className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-[#fff1ce] group-hover:text-yellow-400 transition-colors">
+                                        📝 How to Register
+                                    </h3>
+                                    <p className="text-sm text-[#fbe9bb]/80">
+                                        Complete registration process
+                                    </p>
+                                </div>
+                            </button>
+                        </Reveal>
+
+                        <Reveal delay={0.35}>
+                            <button
+                                onClick={() => setActiveModal('submit')}
+                                className="glass-strong p-6 rounded-2xl hover:border-yellow-500/40 transition-all group cursor-pointer"
+                            >
+                                <div className="flex flex-col items-center text-center gap-3">
+                                    <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600">
+                                        <Send className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-[#fff1ce] group-hover:text-yellow-400 transition-colors">
+                                        🧠 How to Submit Idea
+                                    </h3>
+                                    <p className="text-sm text-[#fbe9bb]/80">
+                                        Phase 1 idea submission guide
+                                    </p>
+                                </div>
+                            </button>
+                        </Reveal>
+
+                        <Reveal delay={0.4}>
+                            <button
+                                onClick={() => setActiveModal('template')}
+                                className="glass-strong p-6 rounded-2xl hover:border-yellow-500/40 transition-all group cursor-pointer"
+                            >
+                                <div className="flex flex-col items-center text-center gap-3">
+                                    <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600">
+                                        <Download className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-[#fff1ce] group-hover:text-yellow-400 transition-colors">
+                                        📄 PPT Template Guide
+                                    </h3>
+                                    <p className="text-sm text-[#fbe9bb]/80">
+                                        Download official template
+                                    </p>
+                                </div>
+                            </button>
+                        </Reveal>
+                    </div>
+                </div>
+
                 {/* Phase Cards */}
                 <div className="max-w-6xl mx-auto px-4 space-y-6 mb-12">
                     {/* Round 1 */}
@@ -182,21 +245,25 @@ const Guidelines = () => {
                             title="What Participants Do"
                             items={[
                                 'Select one assigned problem statement',
-                                'Develop a clear and well-thought-out idea',
-                                'Clearly explain: Problem understanding, Proposed solution approach, Why blockchain technology is required, Innovation/uniqueness, Expected real-world impact, Feasibility of implementation'
+                                'Identify a real-world problem relevant to India',
+                                'Design a solution that contributes towards Atmanirbhar Bharat',
+                                'Clearly explain: Problem understanding in the Indian context, Proposed solution approach, How the solution supports self-reliance, transparency, or efficiency, Innovation and uniqueness of the idea, Expected real-world impact at scale, Feasibility of implementation'
                             ]}
                         />
                         <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-sm">
-                            <strong>📌 Focus:</strong> Clarity of thought and innovation, not coding.
+                            <strong>📌 Primary focus:</strong> Clarity of thought, innovation, and national relevance.
+                        </div>
+                        <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-sm">
+                            <strong>📌 Note:</strong> The choice of technology is flexible — impact and problem-solution alignment matter more than tools used.
                         </div>
 
                         <Section
                             icon="🔹"
                             title="What Participants Submit"
                             items={[
-                                'Idea document or PPT',
+                                'Idea presentation (PPT) / document as per the provided template',
                                 'No source code required',
-                                'No prototype or UI required'
+                                'No prototype, UI, or demo required'
                             ]}
                         />
 
@@ -204,17 +271,17 @@ const Guidelines = () => {
                             icon="🔹"
                             title="What Evaluators Check"
                             items={[
-                                'Clarity and depth of problem understanding',
-                                'Originality and innovation',
-                                'Relevance and correct justification of blockchain usage',
-                                'Practical feasibility',
-                                'Potential social, economic, or technical impact'
+                                'Depth of problem understanding and relevance to India',
+                                'Innovation and originality of the solution',
+                                'Alignment with the vision of Atmanirbhar Bharat',
+                                'Practical feasibility and scalability',
+                                'Potential social, economic, or systemic impact'
                             ]}
                         />
 
                         <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-sm flex items-start gap-2">
                             <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                            <div><strong>Outcome:</strong> Best ideas are shortlisted. Selected teams qualify for Phase 2.</div>
+                            <div><strong>Outcome:</strong> Best and most impactful ideas are shortlisted. Selected teams qualify for Phase 2 (Prototype & Development Round).</div>
                         </div>
                     </PhaseCard>
 
@@ -346,6 +413,8 @@ const Guidelines = () => {
                     </PhaseCard>
                 </div>
 
+                
+
                 {/* General Rules Section */}
                 <div className="max-w-6xl mx-auto px-4 mb-12">
                     <Reveal delay={0.25}>
@@ -366,11 +435,11 @@ const Guidelines = () => {
                 <Reveal delay={0.5}>
                     <div className="max-w-4xl mx-auto px-4">
                         <div className="glass-strong rounded-2xl p-5 md:p-6 flex items-start gap-4">
-                                <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
-                                <div className="text-sm md:text-base text-[#fbe9bb]">
-                                    <strong className="text-yellow-400">Important:</strong> All submissions must be original. Plagiarism or misrepresentation will lead to disqualification. Teams must adhere strictly to deadlines. Judges' decisions are final and binding. Organizers reserve the right to make necessary changes to the schedule.
-                                </div>
+                            <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+                            <div className="text-sm md:text-base text-[#fbe9bb]">
+                                <strong className="text-yellow-400">Important:</strong> All submissions must be original. Plagiarism or misrepresentation will lead to disqualification. Teams must adhere strictly to deadlines. Judges' decisions are final and binding. Organizers reserve the right to make necessary changes to the schedule.
                             </div>
+                        </div>
                     </div>
                 </Reveal>
 
@@ -390,6 +459,194 @@ const Guidelines = () => {
                     </a>
                 </motion.div>
             </div>
+
+            {/* Modals */}
+            <AnimatePresence>
+                {activeModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        onClick={() => setActiveModal(null)}
+                    >
+                        {/* Backdrop */}
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+
+                        {/* Modal Content */}
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto glass-strong rounded-2xl p-6 md:p-8"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setActiveModal(null)}
+                                className="absolute top-4 right-4 p-2 rounded-full glass hover:bg-red-500/20 transition-colors"
+                            >
+                                <X className="w-6 h-6 text-[#fff1ce]" />
+                            </button>
+
+                            {/* Registration Modal */}
+                            {activeModal === 'register' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl md:text-3xl font-bold gradient-text pr-12">
+                                        📝 How to Register for INNOVIT 2026
+                                    </h2>
+                                    <p className="text-[#fbe9bb]">Step-by-Step Registration Process</p>
+
+                                    <div className="space-y-4">
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">1️⃣ Form your team</h3>
+                                            <ul className="space-y-1 text-[#fbe9bb] text-sm ml-4">
+                                                <li>• Team size must be minimum 2 and maximum 4 members</li>
+                                                <li>• Select one Team Leader (primary point of contact)</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">2️⃣ Open the Registration Form</h3>
+                                            <a href="https://forms.gle/Fw2BtK7Dhxs1YWo6A" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline text-sm">
+                                                🔗 https://forms.gle/Fw2BtK7Dhxs1YWo6A
+                                            </a>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">3️⃣ Fill in team details</h3>
+                                            <ul className="space-y-1 text-[#fbe9bb] text-sm ml-4">
+                                                <li>• Team name</li>
+                                                <li>• Team Leader details</li>
+                                                <li>• Team member details</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">4️⃣ Complete the registration fee payment</h3>
+                                            <ul className="space-y-1 text-[#fbe9bb] text-sm ml-4">
+                                                <li>• ₹40 per member</li>
+                                                <li>• Team Leader pays on behalf of the team</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">5️⃣ Upload payment proof</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Upload clear screenshot/PDF of the payment confirmation</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">6️⃣ Confirm consent & submit</h3>
+                                            <ul className="space-y-1 text-[#fbe9bb] text-sm ml-4">
+                                                <li>• Verify all details</li>
+                                                <li>• Submit the form</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                                            <p className="text-sm text-[#fbe9bb]">
+                                                <strong className="text-green-400">📩 After verification:</strong> The Phase-1 Idea Submission link will be shared via email with the Team Leader.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Idea Submission Modal */}
+                            {activeModal === 'submit' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl md:text-3xl font-bold gradient-text pr-12">
+                                        🧠 How to Submit Phase-1 Idea
+                                    </h2>
+                                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                        <p className="text-sm text-[#fbe9bb]">
+                                            <strong className="text-red-400">⚠️ Important:</strong> Only registered teams can submit ideas.
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">1️⃣ Check your email</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Team Leader will receive the Phase-1 Idea Submission form link</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">2️⃣ Select your problem statement</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Choose one assigned problem statement/theme</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">3️⃣ Prepare your idea presentation</h3>
+                                            <ul className="space-y-1 text-[#fbe9bb] text-sm ml-4">
+                                                <li>• Follow the official PPT template only</li>
+                                                <li>• Maximum 8 slides (including title slide)</li>
+                                                <li>• Focus on:</li>
+                                                <li className="ml-4">○ Problem understanding</li>
+                                                <li className="ml-4">○ Proposed solution</li>
+                                                <li className="ml-4">○ Innovation & impact</li>
+                                                <li className="ml-4">○ Feasibility</li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">4️⃣ Convert PPT to PDF</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Save the file as TeamName.pdf</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">5️⃣ Upload PDF & submit</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Upload via the Phase-1 Google Form only</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Template Download Modal */}
+                            {activeModal === 'template' && (
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl md:text-3xl font-bold gradient-text pr-12">
+                                        📄 How to Download the Official PPT Template
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">1️⃣ Open the official PPT template link</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Link will be shared with registered teams via email</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">2️⃣ Click File → Download</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• In Google Slides or PowerPoint Online</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">3️⃣ Select Microsoft PowerPoint (.pptx)</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Download in editable format</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">4️⃣ Prepare your slides</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Do not change the structure or template design</p>
+                                        </div>
+
+                                        <div className="glass p-4 rounded-lg">
+                                            <h3 className="text-lg font-bold text-yellow-400 mb-2">5️⃣ Export final file as PDF</h3>
+                                            <p className="text-[#fbe9bb] text-sm ml-4">• Before submission, convert to PDF format</p>
+                                        </div>
+
+                                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                            <p className="text-sm text-[#fbe9bb]">
+                                                <strong className="text-blue-400">📌 Note:</strong> Template link will be shared with registered teams via email.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

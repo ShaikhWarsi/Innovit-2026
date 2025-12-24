@@ -33,7 +33,9 @@ const Footer = () => {
                             <span className="gradient-text">INNOVIT 2026</span>
                         </h3>
                         <p className="text-[#fbe9bb] mb-4">
-                            SIH-Inspired Internal Hackathon organized by the Blockchain Club at VIT Bhopal University.
+                            Ideas Powering Atmanirbhar Bharat
+                            <br />
+                            by the Blockchain Club at VIT Bhopal University.
                         </p>
                         <div className="space-y-2 text-sm text-[#fbe9bb]">
                             <div className="flex items-center gap-2">
@@ -97,7 +99,7 @@ const Footer = () => {
                             </div>
                             <div className="glass p-3 rounded-lg">
                                 <p className="text-sm text-[#fbe9bb]">Focus</p>
-                                <p className="font-semibold">Blockchain Technology</p>
+                                <p className="font-semibold">Ideas that Empower  vision of Atmanirbhar Bharat</p>
                             </div>
                         </div>
                     </motion.div>

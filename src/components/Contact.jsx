@@ -125,8 +125,8 @@ const Contact = () => {
       answer: "All students of VIT Bhopal University are eligible to participate. Students from any year, branch, or specialization can take part."
     },
     {
-      question: "Is attending the orientation session mandatory?",
-      answer: "While not mandatory, attending the orientation session is highly recommended as it includes hackathon guidance, timeline overview, and mentoring insights from SIH 2025 Grand Finalists."
+      question: "How do I participate in Phase 1?",
+      answer: "Register through the official form and submit your idea presentation (PPT/document) addressing one of the assigned problem statements. Focus on clarity of thought, innovation, and relevance to India and Atmanirbhar Bharat. The deadline is January 13, 2026."
     },
     {
       question: "Who are the mentors for INNOVIT 2026?",
@@ -175,8 +175,8 @@ const Contact = () => {
       )
     },
     {
-      question: "Where can I register for the orientation session?",
-      answer: "You can register for the orientation session through the Google Form link provided on the website and official announcements."
+      question: "What should I include in my Phase 1 submission?",
+      answer: "Your submission should include: problem understanding in the Indian context, proposed solution approach, how it supports self-reliance/transparency/efficiency, innovation and uniqueness, expected real-world impact at scale, and feasibility of implementation. No code or prototype is required in Phase 1."
     }
   ];
 

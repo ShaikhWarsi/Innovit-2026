@@ -37,40 +37,41 @@ const Rounds = () => {
                     heading: '🔹 What Participants Do',
                     items: [
                         'Select one assigned problem statement',
-                        'Develop a clear and well-thought-out idea',
+                        'Identify a real-world problem relevant to India',
+                        'Design a solution that contributes towards Atmanirbhar Bharat',
                         'Clearly explain:',
-                        '  ○ Problem understanding',
+                        '  ○ Problem understanding in the Indian context',
                         '  ○ Proposed solution approach',
-                        '  ○ Why blockchain technology is required',
-                        '  ○ Innovation / uniqueness of the idea',
-                        '  ○ Expected real-world impact',
+                        '  ○ How the solution supports self-reliance, transparency, or efficiency',
+                        '  ○ Innovation and uniqueness of the idea',
+                        '  ○ Expected real-world impact at scale',
                         '  ○ Feasibility of implementation'
                     ],
-                    note: '📌 Focus of this phase is clarity of thought and innovation, not coding.'
+                    note: '📌 Primary focus of this phase is clarity of thought, innovation, and national relevance.\n📌 The choice of technology is flexible — impact and problem-solution alignment matter more than tools used.'
                 },
                 {
                     heading: '🔹 What Participants Submit',
                     items: [
-                        'Idea document or PPT',
+                        'Idea presentation (PPT) / document as per the provided template',
                         'No source code required',
-                        'No prototype or UI required'
+                        'No prototype, UI, or demo required'
                     ]
                 },
                 {
                     heading: '🔹 What Evaluators Check',
                     items: [
-                        'Clarity and depth of problem understanding',
-                        'Originality and innovation',
-                        'Relevance and correct justification of blockchain usage',
-                        'Practical feasibility',
-                        'Potential social, economic, or technical impact'
+                        'Depth of problem understanding and relevance to India',
+                        'Innovation and originality of the solution',
+                        'Alignment with the vision of Atmanirbhar Bharat',
+                        'Practical feasibility and scalability',
+                        'Potential social, economic, or systemic impact'
                     ]
                 },
                 {
                     heading: '🔹 Outcome',
                     items: [
-                        'Best ideas are shortlisted',
-                        'Selected teams qualify for Phase 2'
+                        'Best and most impactful ideas are shortlisted',
+                        'Selected teams qualify for Phase 2 (Prototype & Development Round)'
                     ]
                 }
             ]

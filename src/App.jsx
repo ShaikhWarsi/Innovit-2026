@@ -14,6 +14,8 @@ import Guidelines from './components/Guidelines';
 import ProblemStatement from './components/ProblemStatement';
 import RegisterToast from './components/RegisterToast';
 import WhatsAppFloat from './components/WhatsAppFloat';
+import DownloadFloat from './components/DownloadFloat';
+import IDCard from './components/IDCard';
 import Preloader from './components/Preloader';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { GlobalSpotlight } from './components/MagicEffects';
@@ -46,6 +48,9 @@ function App() {
             {/* WhatsApp Float Button */}
             <WhatsAppFloat />
 
+            {/* Download Float Button */}
+            <DownloadFloat />
+
             {/* Disable GlobalSpotlight on mobile for performance */}
             <GlobalSpotlight
               enabled={!isMobile}
@@ -69,6 +74,7 @@ function App() {
               <Route path="/guidelines" element={<Guidelines />} />
               <Route path="/rules" element={<Guidelines />} />
               <Route path="/problem-statement" element={<ProblemStatement />} />
+              <Route path="/id-card" element={<IDCard />} />
             </Routes>
 
             <Footer />
