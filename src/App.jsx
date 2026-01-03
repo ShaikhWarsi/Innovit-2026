@@ -70,7 +70,7 @@ function App() {
             <GlobalSpotlight
               enabled={!isMobile}
               spotlightRadius={300}
-              glowColor="245, 188, 34"
+              glowColor="255, 153, 51"
               targetSelector=".magic-card"
             />
 

@@ -30,7 +30,9 @@ const Background = () => {
         const createParticles = () => {
             const count = Math.min(100, Math.floor((window.innerWidth * window.innerHeight) / 15000));
             particles = [];
+            const patrioticHues = [28, 120, 220]; // Saffron (~28), Green (~120), Blue (~220)
             for (let i = 0; i < count; i++) {
+                const hueIndex = Math.floor(Math.random() * patrioticHues.length);
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -38,7 +40,7 @@ const Background = () => {
                     vy: (Math.random() - 0.5) * 0.3,
                     size: Math.random() * 2 + 0.5,
                     opacity: Math.random() * 0.5 + 0.2,
-                    hue: 40 + Math.random() * 20 // Gold to amber range
+                    hue: patrioticHues[hueIndex] + (Math.random() * 10 - 5) // Tri-color range with variation
                 });
             }
         };
@@ -53,8 +55,9 @@ const Background = () => {
 
                     if (distance < maxDistance) {
                         const opacity = (1 - distance / maxDistance) * 0.15;
+                        const avgHue = (particles[i].hue + particles[j].hue) / 2;
                         ctx!.beginPath();
-                        ctx!.strokeStyle = `hsla(45, 92%, 55%, ${opacity})`;
+                        ctx!.strokeStyle = `hsla(${avgHue}, 92%, 55%, ${opacity})`;
                         ctx!.lineWidth = 0.5;
                         ctx!.moveTo(particles[i].x, particles[i].y);
                         ctx!.lineTo(particles[j].x, particles[j].y);
@@ -118,24 +121,26 @@ const Background = () => {
 
     return (
         <div className="fixed inset-0 -z-10 overflow-hidden">
-            {/* Base gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-[hsl(260,70%,8%)]" />
+            {/* Patriotic base gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#13131f] to-[#1a1a2a]" />
             
-            {/* Radial gradient overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(260,70%,12%)_0%,_transparent_70%)]" />
+            {/* Patriotic radial gradient overlays */}
+            <div className="absolute top-0 left-0 w-full h-1/3 bg-[radial-gradient(ellipse_at_top,_rgba(255,153,51,0.08)_0%,_transparent_70%)]" />
+            <div className="absolute bottom-0 right-0 w-full h-1/3 bg-[radial-gradient(ellipse_at_bottom,_rgba(19,136,8,0.08)_0%,_transparent_70%)]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(ellipse_at_center,_rgba(30,58,138,0.05)_0%,_transparent_50%)]" />
             
             {/* Grid pattern */}
-            <div className="absolute inset-0 bg-grid opacity-30" />
+            <div className="absolute inset-0 bg-grid opacity-20" />
             
             {/* Animated canvas particles */}
             <canvas
                 ref={canvasRef}
-                className="absolute inset-0 opacity-60"
+                className="absolute inset-0 opacity-70"
             />
             
-            {/* Floating orbs */}
+            {/* Patriotic Floating orbs */}
             <motion.div
-                className="floating-orb w-[600px] h-[600px] bg-primary/10 -top-40 -left-40"
+                className="floating-orb w-[600px] h-[600px] bg-gradient-to-br from-saffron-400/10 to-transparent -top-40 -left-40 blur-3xl"
                 animate={{
                     x: [0, 50, -30, 0],
                     y: [0, 30, 60, 0],
@@ -149,7 +154,7 @@ const Background = () => {
             />
             
             <motion.div
-                className="floating-orb w-[500px] h-[500px] bg-accent/10 top-1/3 -right-40"
+                className="floating-orb w-[500px] h-[500px] bg-gradient-to-br from-india-green-400/10 to-transparent top-1/3 -right-40 blur-3xl"
                 animate={{
                     x: [0, -40, 20, 0],
                     y: [0, 50, -20, 0],
@@ -164,7 +169,7 @@ const Background = () => {
             />
             
             <motion.div
-                className="floating-orb w-[400px] h-[400px] bg-gold/5 bottom-20 left-1/4"
+                className="floating-orb w-[400px] h-[400px] bg-gradient-to-br from-ashoka-blue-400/8 to-transparent bottom-20 left-1/4 blur-3xl"
                 animate={{
                     x: [0, 60, -40, 0],
                     y: [0, -30, 40, 0],
@@ -182,7 +187,7 @@ const Background = () => {
             <div className="noise-overlay" />
             
             {/* Vignette effect */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_hsl(240,20%,6%)_100%)] opacity-60" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(10,10,26,0.8)_100%)] opacity-60" />
         </div>
     );
 };

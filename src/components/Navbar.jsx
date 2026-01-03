@@ -36,7 +36,7 @@ const Navbar = () => {
                 animate={isMobile ? {} : { y: 0, opacity: 1 }}
                 transition={isMobile ? {} : { duration: 0.6, delay: 0.2 }}
             >
-                <div className="glass-strong px-4 sm:px-6 py-3 rounded-full flex items-center justify-between backdrop-blur-xl border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+                <div className="glass-strong px-4 sm:px-6 py-3 rounded-full flex items-center justify-between backdrop-blur-xl border-2 border-saffron-400/30 shadow-lg shadow-saffron-400/15">
                     {/* Logo Section */}
                     <Link to="/" className="flex items-center gap-2">
                         <img
@@ -54,7 +54,7 @@ const Navbar = () => {
                                 <a
                                     key={link.href}
                                     href={getLink(link.href)}
-                                    className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors duration-200"
+                                    className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(255,153,51,0.6)]"
                                 >
                                     {link.label}
                                 </a>
@@ -62,7 +62,7 @@ const Navbar = () => {
                                 <Link
                                     key={link.href}
                                     to={link.href}
-                                    className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors duration-200"
+                                    className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(255,153,51,0.6)]"
                                 >
                                     {link.label}
                                 </Link>
@@ -81,7 +81,7 @@ const Navbar = () => {
                     {/* Mobile Hamburger Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden text-[#fff1ce] hover:text-yellow-400 transition-colors"
+                        className="md:hidden text-white/90 hover:text-saffron-400 transition-colors"
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -98,7 +98,7 @@ const Navbar = () => {
                         transition={{ duration: 0.2 }}
                         className="fixed top-16 left-4 right-4 z-40 md:hidden"
                     >
-                        <div className="glass-strong p-4 rounded-2xl border border-yellow-500/20 shadow-2xl backdrop-blur-xl">
+                        <div className="glass-strong p-4 rounded-2xl border-2 border-saffron-400/30 shadow-2xl shadow-saffron-400/20 backdrop-blur-xl">
                             <div className="flex flex-col gap-3">
                                 {navLinks.map(link => (
                                     link.isHash ? (
@@ -106,7 +106,7 @@ const Navbar = () => {
                                             key={link.href}
                                             href={getLink(link.href)}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors py-2 px-3 rounded-lg hover:bg-yellow-500/10"
+                                            className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-colors py-2 px-3 rounded-lg hover:bg-saffron-400/10 border border-transparent hover:border-saffron-400/20"
                                         >
                                             {link.label}
                                         </a>
@@ -115,7 +115,7 @@ const Navbar = () => {
                                             key={link.href}
                                             to={link.href}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="text-sm font-medium text-[#fff1ce] hover:text-yellow-400 transition-colors py-2 px-3 rounded-lg hover:bg-yellow-500/10"
+                                            className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-colors py-2 px-3 rounded-lg hover:bg-saffron-400/10 border border-transparent hover:border-saffron-400/20"
                                         >
                                             {link.label}
                                         </Link>

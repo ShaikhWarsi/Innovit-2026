@@ -78,20 +78,20 @@ const Hero = () => {
             {/* Background - Static on mobile, animated on desktop */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 {isMobile ? (
-                    // Static gradient background for mobile
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#1a1410] to-[#0a0a0f]">
+                    // Static gradient background for mobile - Patriotic theme
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a1a] via-[#13131f] to-[#1a1a2a]">
                         <div className="absolute inset-0 opacity-30"
                             style={{
-                                backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(245, 188, 34, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%)',
+                                backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255, 153, 51, 0.2) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(19, 136, 8, 0.15) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.1) 0%, transparent 60%)',
                             }}
                         />
                     </div>
                 ) : (
-                    // Animated PixelBlast for desktop
+                    // Animated PixelBlast for desktop - Saffron patriotic color
                     <PixelBlast
                         variant="circle"
                         pixelSize={4}
-                        color="#f5bc22"
+                        color="#FF9933"
                         patternScale={2.5}
                         patternDensity={0.8}
                         pixelSizeJitter={0.3}
@@ -131,11 +131,11 @@ const Hero = () => {
                 </div>
             )}
 
-            {/* Grid Overlay */}
+            {/* Grid Overlay - Patriotic tri-color */}
             <div className="absolute inset-0 opacity-10 z-[2]"
                 style={{
-                    backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)`,
+                    backgroundImage: `linear-gradient(rgba(255, 153, 51, 0.4) 1px, transparent 1px),
+                           linear-gradient(90deg, rgba(19, 136, 8, 0.3) 1px, transparent 1px)`,
                     backgroundSize: '50px 50px'
                 }}
             />
@@ -147,10 +147,10 @@ const Hero = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    {/* Badge */}
+                    {/* Badge - Patriotic styling */}
                     <Reveal className="inline-flex items-center gap-2 glass px-4 py-2 mb-6" delay={0.15}>
-                        <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="text-xs sm:text-sm font-medium text-[#fff1ce]">VIT Bhopal Blockchain Club Presents</span>
+                        <Sparkles className="w-4 h-4 text-saffron-400" />
+                        <span className="text-xs sm:text-sm font-medium text-white/90">VIT Bhopal Blockchain Club Presents</span>
                     </Reveal>
 
                     {/* 3D Animated Logo with Continuous Loops */}
@@ -198,16 +198,16 @@ const Hero = () => {
                                     transformStyle: 'preserve-3d',
                                 }}
                             >
-                                {/* Subtle pulsing glow */}
+                                {/* Patriotic pulsing glow */}
                                 <motion.div
                                     className="absolute inset-0 rounded-full blur-3xl"
                                     style={{
-                                        background: 'radial-gradient(circle, rgba(245, 188, 34, 0.15) 0%, rgba(255, 215, 0, 0.08) 50%, transparent 70%)',
+                                        background: 'radial-gradient(circle, rgba(255, 153, 51, 0.2) 0%, rgba(19, 136, 8, 0.12) 40%, rgba(30, 58, 138, 0.08) 60%, transparent 80%)',
                                         transform: 'translateZ(-80px) scale(1.3)',
                                     }}
                                     animate={{
-                                        opacity: [0.2, 0.35, 0.2],
-                                        scale: [1.2, 1.3, 1.2],
+                                        opacity: [0.25, 0.4, 0.25],
+                                        scale: [1.2, 1.35, 1.2],
                                     }}
                                     transition={{
                                         duration: 3,
@@ -227,8 +227,8 @@ const Hero = () => {
                                     }}
                                     animate={{
                                         filter: isHovering
-                                            ? 'drop-shadow(0 0 50px rgba(245, 188, 34, 0.9)) drop-shadow(0 0 80px rgba(255, 215, 0, 0.6))'
-                                            : 'drop-shadow(0 0 25px rgba(245, 188, 34, 0.4)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.2))',
+                                            ? 'drop-shadow(0 0 50px rgba(255, 153, 51, 0.9)) drop-shadow(0 0 80px rgba(19, 136, 8, 0.6))'
+                                            : 'drop-shadow(0 0 25px rgba(255, 153, 51, 0.5)) drop-shadow(0 0 40px rgba(19, 136, 8, 0.3))',
                                         rotate: [0, 2, 0, -2, 0], // Subtle wiggle
                                     }}
                                     transition={{
@@ -241,65 +241,70 @@ const Hero = () => {
                                     }}
                                 />
 
-                                {/* Orbiting particles */}
-                                {[...Array(3)].map((_, i) => (
-                                    <motion.div
-                                        key={i}
-                                        className="absolute w-2 h-2 bg-yellow-400 rounded-full"
-                                        style={{
-                                            top: '50%',
-                                            left: '50%',
-                                            transform: 'translateZ(50px)',
-                                        }}
-                                        animate={{
-                                            x: [0, Math.cos((i * 120 * Math.PI) / 180) * 150, 0],
-                                            y: [0, Math.sin((i * 120 * Math.PI) / 180) * 150, 0],
-                                            opacity: [0.3, 0.8, 0.3],
-                                            scale: [0.8, 1.2, 0.8],
-                                        }}
-                                        transition={{
-                                            duration: 5 + i,
-                                            repeat: Infinity,
-                                            ease: "easeInOut",
-                                            delay: i * 0.5,
-                                        }}
-                                    />
-                                ))}
+                                {/* Orbiting particles - Tri-color patriotic */}
+                                {[...Array(3)].map((_, i) => {
+                                    const colors = ['#FF9933', '#FFFFFF', '#138808'];
+                                    return (
+                                        <motion.div
+                                            key={i}
+                                            className="absolute w-2 h-2 rounded-full"
+                                            style={{
+                                                top: '50%',
+                                                left: '50%',
+                                                transform: 'translateZ(50px)',
+                                                backgroundColor: colors[i],
+                                                boxShadow: `0 0 10px ${colors[i]}, 0 0 20px ${colors[i]}`,
+                                            }}
+                                            animate={{
+                                                x: [0, Math.cos((i * 120 * Math.PI) / 180) * 150, 0],
+                                                y: [0, Math.sin((i * 120 * Math.PI) / 180) * 150, 0],
+                                                opacity: [0.3, 0.8, 0.3],
+                                                scale: [0.8, 1.2, 0.8],
+                                            }}
+                                            transition={{
+                                                duration: 5 + i,
+                                                repeat: Infinity,
+                                                ease: "easeInOut",
+                                                delay: i * 0.5,
+                                            }}
+                                        />
+                                    );
+                                })}
                             </motion.div>
                         </motion.div>
                     </Reveal>
 
                     {/* Subtitle */}
-                    <Reveal className="text-lg sm:text-xl md:text-2xl text-[#fff1ce] mb-8 max-w-2xl mx-auto" delay={0.4}>
+                    <Reveal className="text-lg sm:text-xl md:text-2xl text-white/90 font-semibold mb-8 max-w-2xl mx-auto" delay={0.4}>
                         Ideas Powering Atmanirbhar Bharat
                     </Reveal>
 
                     <Reveal className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm px-4" delay={0.5}>
-                        <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
-                            <span className="text-yellow-400">🏆</span> Hybrid Mode
+                        <div className="glass px-3 py-1.5 rounded-lg text-white/90 border border-saffron-400/20">
+                            <span className="text-saffron-400">🏆</span> Hybrid Mode
                         </div>
-                        <div className="glass px-3 py-1.5 rounded-lg text-[#fff1ce]">
-                            <span className="text-yellow-400">📅</span> Finale: Feb 19, 2026
+                        <div className="glass px-3 py-1.5 rounded-lg text-white/90 border border-india-green-400/20">
+                            <span className="text-india-green-400">📅</span> Finale: Feb 19, 2026
                         </div>
                         <a
                             href="https://forms.gle/vbYnvFGaUz3AU1nJA"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="glass px-3 py-1.5 rounded-lg text-[#fff1ce] hover:text-yellow-400 hover:border-yellow-400/40 transition-all duration-200 cursor-pointer"
+                            className="glass px-3 py-1.5 rounded-lg text-white/90 hover:text-saffron-400 border border-saffron-400/20 hover:border-saffron-400/60 hover:bg-saffron-400/10 transition-all duration-200 cursor-pointer"
                         >
-                            <span className="text-yellow-400">📅</span> Phase 1 Registration Open
+                            <span className="text-saffron-400">📅</span> Phase 1 Registration Open
                         </a>
                     </Reveal>
 
                     {/* Countdown Timer */}
                     <Reveal className="mb-8 px-4" delay={0.6}>
-                        <p className="text-xs sm:text-lg uppercase tracking-wider text-[#fbe9bb] mb-3 font-extrabold">Phase 1 [ Idea Submission ] Ends in </p>
+                        <p className="text-xs sm:text-lg uppercase tracking-wider text-white/90 mb-3 font-extrabold">Phase 1 [ Idea Submission ] Ends in </p>
                         <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
                             {[
-                                { label: 'Days', value: timeLeft.days, color: '#f5bc22' },
-                                { label: 'Hours', value: timeLeft.hours, color: '#ffd700' },
-                                { label: 'Minutes', value: timeLeft.minutes, color: '#fff1ce' },
-                                { label: 'Seconds', value: timeLeft.seconds, color: '#f5bc22' }
+                                { label: 'Days', value: timeLeft.days, color: '#FF9933' },
+                                { label: 'Hours', value: timeLeft.hours, color: '#FFFFFF' },
+                                { label: 'Minutes', value: timeLeft.minutes, color: '#138808' },
+                                { label: 'Seconds', value: timeLeft.seconds, color: '#1E3A8A' }
                             ].map((item, index) => (
                                 <Reveal key={item.label} delay={0.65 + index * 0.05}>
                                     <ElectricBorder
@@ -323,7 +328,7 @@ const Hero = () => {
                                                 <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold gradient-text mb-1">
                                                     {String(item.value).padStart(2, '0')}
                                                 </div>
-                                                <div className="text-[10px] sm:text-xs text-[#fbe9bb] uppercase tracking-wider">
+                                                <div className="text-[10px] sm:text-xs text-white/80 uppercase tracking-wider">
                                                     {item.label}
                                                 </div>
                                             </div>
@@ -353,7 +358,7 @@ const Hero = () => {
 
                 {/* Scroll Indicator */}
                 <Reveal className="absolute bottom-8 left-1/2 transform -translate-x-1/2" delay={1.0}>
-                    <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+                    <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-saffron-400 animate-bounce" />
                 </Reveal>
             </div>
         </section>
