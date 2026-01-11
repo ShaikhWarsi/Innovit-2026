@@ -12,6 +12,7 @@ import Contact from './components/Contact';
 import Rules from './components/Rules';
 import Guidelines from './components/Guidelines';
 import ProblemStatement from './components/ProblemStatement';
+import Results from './components/Results';
 import RegisterToast from './components/RegisterToast';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import DownloadFloat from './components/DownloadFloat';
@@ -89,6 +90,7 @@ function App() {
               <Route path="/guidelines" element={<Guidelines />} />
               <Route path="/rules" element={<Guidelines />} />
               <Route path="/problem-statement" element={<ProblemStatement />} />
+              <Route path="/results" element={<Results />} />
               <Route path="/id-card" element={<IDCard />} />
             </Routes>
 

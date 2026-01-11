@@ -25,6 +25,7 @@ const Navbar = () => {
         { href: '#prizes', label: 'Prizes', isHash: true },
         { href: '/guidelines', label: 'Guidelines', isHash: false },
         { href: '/problem-statement', label: 'Problem Statement', isHash: false },
+        { href: '/results', label: 'Results', isHash: false },
         { href: '/contact', label: 'Contact & FAQs', isHash: false }
     ];
 
