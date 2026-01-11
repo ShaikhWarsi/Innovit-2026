@@ -45,7 +45,7 @@ const Hero = () => {
     };
 
     useEffect(() => {
-        const phase1Deadline = new Date('2026-01-13T23:59:59');
+        const phase1Deadline = new Date('2026-01-17T23:59:59');
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -74,7 +74,7 @@ const Hero = () => {
     }));
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 px-4">
+        <section className="relative flex items-center justify-center min-h-screen px-4 py-12 overflow-hidden">
             {/* Background - Static on mobile, animated on desktop */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 {isMobile ? (
@@ -141,29 +141,29 @@ const Hero = () => {
             />
 
             {/* Content Container with proper spacing */}
-            <div className="relative z-10 w-full max-w-6xl mx-auto text-center pt-24 sm:pt-20">
+            <div className="relative z-10 w-full max-w-6xl pt-24 mx-auto text-center sm:pt-20">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
                     {/* Badge - Patriotic styling */}
-                    <Reveal className="inline-flex items-center gap-2 glass px-4 py-2 mb-6" delay={0.15}>
+                    <Reveal className="inline-flex items-center gap-2 px-4 py-2 mb-6 glass" delay={0.15}>
                         <Sparkles className="w-4 h-4 text-saffron-400" />
-                        <span className="text-xs sm:text-sm font-medium text-white/90">VIT Bhopal Blockchain Club Presents</span>
+                        <span className="text-xs font-medium sm:text-sm text-white/90">VIT Bhopal Blockchain Club Presents</span>
                     </Reveal>
 
                     {/* 3D Animated Logo with Continuous Loops */}
                     <Reveal variant="fade" delay={0.2}>
                         <motion.div
-                            className="relative mb-12 flex justify-center items-center"
+                            className="relative flex items-center justify-center mb-12"
                             style={{ perspective: '1500px' }}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
                             <motion.div
-                                className="logo-3d-container relative cursor-pointer"
+                                className="relative cursor-pointer logo-3d-container"
                                 onMouseMove={handleMouseMove}
                                 onMouseEnter={() => setIsHovering(true)}
                                 onMouseLeave={handleMouseLeave}
@@ -275,11 +275,11 @@ const Hero = () => {
                     </Reveal>
 
                     {/* Subtitle */}
-                    <Reveal className="text-lg sm:text-xl md:text-2xl text-white/90 font-semibold mb-8 max-w-2xl mx-auto" delay={0.4}>
+                    <Reveal className="max-w-2xl mx-auto mb-8 text-lg font-semibold sm:text-xl md:text-2xl text-white/90" delay={0.4}>
                         Ideas Powering Atmanirbhar Bharat
                     </Reveal>
 
-                    <Reveal className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm px-4" delay={0.5}>
+                    <Reveal className="flex flex-wrap justify-center gap-2 px-4 mb-8 text-xs sm:gap-3 sm:text-sm" delay={0.5}>
                         <div className="glass px-3 py-1.5 rounded-lg text-white/90 border border-saffron-400/20">
                             <span className="text-saffron-400">🏆</span> Hybrid Mode
                         </div>
@@ -297,8 +297,8 @@ const Hero = () => {
                     </Reveal>
 
                     {/* Countdown Timer */}
-                    <Reveal className="mb-8 px-4" delay={0.6}>
-                        <p className="text-xs sm:text-lg uppercase tracking-wider text-white/90 mb-3 font-extrabold">Phase 1 [ Idea Submission ] Ends in </p>
+                    <Reveal className="px-4 mb-8" delay={0.6}>
+                        <p className="mb-3 text-xs font-extrabold tracking-wider uppercase sm:text-lg text-white/90">Phase 1 [ Idea Submission ] Ends in </p>
                         <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
                             {[
                                 { label: 'Days', value: timeLeft.days, color: '#FF9933' },
@@ -325,7 +325,7 @@ const Hero = () => {
                                             enableBorderGlow={!isMobile}
                                         >
                                             <div className="glass-strong p-2 sm:p-3 md:p-4 rounded-xl min-w-[60px] sm:min-w-[70px] md:min-w-[85px]">
-                                                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold gradient-text mb-1">
+                                                <div className="mb-1 text-xl font-bold sm:text-2xl md:text-3xl lg:text-4xl gradient-text">
                                                     {String(item.value).padStart(2, '0')}
                                                 </div>
                                                 <div className="text-[10px] sm:text-xs text-white/80 uppercase tracking-wider">
@@ -340,15 +340,15 @@ const Hero = () => {
                     </Reveal>
 
                     {/* CTA Buttons */}
-                    <Reveal className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4" delay={0.8}>
+                    <Reveal className="flex flex-col items-center justify-center gap-3 px-4 sm:flex-row" delay={0.8}>
                         <Link to="timeline" smooth={true} duration={800}>
-                            <button className="btn-primary flex items-center gap-2 w-full sm:w-auto">
+                            <button className="flex items-center w-full gap-2 btn-primary sm:w-auto">
                                 <Rocket className="w-4 h-4" />
                                 View Timeline
                             </button>
                         </Link>
                         <Link to="rounds" smooth={true} duration={800}>
-                            <button className="btn-secondary flex items-center gap-2 w-full sm:w-auto">
+                            <button className="flex items-center w-full gap-2 btn-secondary sm:w-auto">
                                 <Calendar className="w-4 h-4" />
                                 Explore Rounds
                             </button>
@@ -357,7 +357,7 @@ const Hero = () => {
                 </motion.div>
 
                 {/* Scroll Indicator */}
-                <Reveal className="absolute bottom-8 left-1/2 transform -translate-x-1/2" delay={1.0}>
+                <Reveal className="absolute transform -translate-x-1/2 bottom-8 left-1/2" delay={1.0}>
                     <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-saffron-400 animate-bounce" />
                 </Reveal>
             </div>

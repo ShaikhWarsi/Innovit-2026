@@ -35,21 +35,21 @@ const Timeline = () => {
             color: 'gold'
         },
         {
-            date: '13 Jan 2026',
+            date: '17 Jan 2026',
             title: 'Phase 1 Deadline',
             description: 'Registration & idea submission closes',
             icon: <Lightbulb className="w-6 h-6" />,
             color: 'cream'
         },
         {
-            date: '16 Jan 2026',
+            date: '18 Jan 2026',
             title: 'Phase 1 Results',
             description: 'Shortlisted teams announced',
             icon: <CheckCircle className="w-6 h-6" />,
             color: 'cream'
         },
         {
-            date: '17 Jan 2026',
+            date: '18 Jan 2026',
             title: 'Phase 2 Opens',
             description: 'Prototype submission forms released',
             icon: <Code className="w-6 h-6" />,
@@ -115,24 +115,24 @@ const Timeline = () => {
     };
 
     return (
-        <section id="timeline" className="section-padding relative overflow-hidden">
+        <section id="timeline" className="relative overflow-hidden section-padding">
 
             {/* Background Elements */}
             <div className="absolute inset-0 opacity-5">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-500 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-400 rounded-full blur-3xl"></div>
+                <div className="absolute bg-yellow-500 rounded-full top-20 left-10 w-72 h-72 blur-3xl"></div>
+                <div className="absolute rounded-full bottom-20 right-10 w-96 h-96 bg-amber-400 blur-3xl"></div>
             </div>
 
             <div className="container relative z-10">
                 {/* Section Header */}
                 <motion.div
-                    className="text-center mb-12"
+                    className="mb-12 text-center"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                    <h2 className="mb-4 text-4xl font-bold md:text-5xl">
                         <span className="gradient-text">Event Timeline</span>
                     </h2>
                     <p className="text-base md:text-lg text-[#fbe9bb] max-w-2xl mx-auto px-4">
@@ -143,7 +143,7 @@ const Timeline = () => {
                 {/* Timeline */}
                 <div className="relative max-w-5xl mx-auto">
                     {/* Timeline Line */}
-                    <div className="timeline-line hidden md:block"></div>
+                    <div className="hidden timeline-line md:block"></div>
 
                     {/* Timeline Events */}
                     <div className="space-y-8 md:space-y-10">
@@ -180,7 +180,7 @@ const Timeline = () => {
                                                     }`}
                                                 whileHover={{ scale: 1.02 }}
                                             >
-                                                <div className="flex items-start gap-4 md:hidden mb-3">
+                                                <div className="flex items-start gap-4 mb-3 md:hidden">
                                                     <div className={`p-2.5 rounded-xl bg-gradient-to-br ${colorClasses[event.color]}`}>
                                                         {event.icon}
                                                     </div>
@@ -198,7 +198,7 @@ const Timeline = () => {
                                 </div>
 
                                 {/* Icon (Desktop) */}
-                                <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+                                <div className="absolute hidden transform -translate-x-1/2 md:block left-1/2">
                                     <motion.div
                                         className={`p-3 rounded-xl bg-gradient-to-br ${colorClasses[event.color]} ${event.highlight ? 'pulse-glow' : ''
                                             }`}
