@@ -19,7 +19,7 @@ const RegisterToast = () => {
     };
 
     const handleRegister = () => {
-        window.open('https://forms.gle/jdpdWjwL8FsvDJtb8', '_blank');
+        window.open('https://forms.gle/RjPbxwcGKTjqym6G7', '_blank');
         setIsVisible(false);
     };
 
@@ -33,7 +33,7 @@ const RegisterToast = () => {
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="fixed right-4 top-20 z-[100] w-[85vw] sm:w-80"
                 >
-                    <div className="glass-strong p-4 rounded-2xl border border-yellow-500/30 shadow-2xl shadow-yellow-500/20 backdrop-blur-xl">
+                    <div className="p-4 border shadow-2xl glass-strong rounded-2xl border-yellow-500/30 shadow-yellow-500/20 backdrop-blur-xl">
                         {/* Close button */}
                         <button
                             onClick={handleClose}
@@ -44,15 +44,15 @@ const RegisterToast = () => {
 
                         {/* Content */}
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center flex-shrink-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600">
                                 <Calendar className="w-5 h-5 text-black" />
                             </div>
                             <div className="flex-1 pr-4">
-                                <h3 className="text-sm sm:text-base font-bold gradient-text">
-                                    Registerations are open !!!
+                                <h3 className="text-sm font-bold sm:text-base gradient-text">
+                                    Phase 2 Submission Open !!!
                                 </h3>
                                 <p className="text-xs text-[#fff1ce]/80">
-                                    Register for INNOVIT 2026
+                                    Submit your prototype now
                                 </p>
                             </div>
                         </div>
@@ -60,9 +60,9 @@ const RegisterToast = () => {
                         {/* Register button */}
                         <button
                             onClick={handleRegister}
-                            className="w-full btn-primary text-sm py-2 rounded-xl font-semibold hover:scale-105 transition-transform"
+                            className="w-full py-2 text-sm font-semibold transition-transform btn-primary rounded-xl hover:scale-105"
                         >
-                            Register Now →
+                            Submit Now →
                         </button>
                     </div>
                 </motion.div>

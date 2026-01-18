@@ -15,7 +15,7 @@ const Navbar = () => {
     };
 
     const handleRegister = () => {
-        window.open('https://forms.gle/vbYnvFGaUz3AU1nJA', '_blank');
+        window.open('https://forms.gle/RjPbxwcGKTjqym6G7', '_blank');
         setIsMenuOpen(false);
     };
 
@@ -32,24 +32,24 @@ const Navbar = () => {
     return (
         <>
             <motion.nav
-                className="absolute top-2 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4"
+                className="absolute z-50 w-full max-w-6xl px-4 transform -translate-x-1/2 top-2 left-1/2"
                 initial={isMobile ? {} : { y: -100, opacity: 0 }}
                 animate={isMobile ? {} : { y: 0, opacity: 1 }}
                 transition={isMobile ? {} : { duration: 0.6, delay: 0.2 }}
             >
-                <div className="glass-strong px-4 sm:px-6 py-3 rounded-full flex items-center justify-between backdrop-blur-xl border-2 border-saffron-400/30 shadow-lg shadow-saffron-400/15">
+                <div className="flex items-center justify-between px-4 py-3 border-2 rounded-full shadow-lg glass-strong sm:px-6 backdrop-blur-xl border-saffron-400/30 shadow-saffron-400/15">
                     {/* Logo Section */}
                     <Link to="/" className="flex items-center gap-2">
                         <img
                             src="/Blockchain Club logo.png"
                             alt="Blockchain Club VIT Bhopal"
-                            className="w-8 h-8 rounded-full object-cover"
+                            className="object-cover w-8 h-8 rounded-full"
                         />
-                        <span className="text-base sm:text-lg font-bold gradient-text">Blockchain Club</span>
+                        <span className="text-base font-bold sm:text-lg gradient-text">Blockchain Club</span>
                     </Link>
 
                     {/* Desktop Navigation Links */}
-                    <div className="hidden md:flex items-center gap-8">
+                    <div className="items-center hidden gap-8 md:flex">
                         {navLinks.map(link => (
                             link.isHash ? (
                                 <a
@@ -74,15 +74,15 @@ const Navbar = () => {
                     {/* Desktop Register Button */}
                     <button
                         onClick={handleRegister}
-                        className="hidden md:block btn-primary text-sm px-4 sm:px-6 py-2 rounded-full hover:scale-105 transition-transform"
+                        className="hidden px-4 py-2 text-sm transition-transform rounded-full md:block btn-primary sm:px-6 hover:scale-105"
                     >
-                        Register
+                        Submit Prototype
                     </button>
 
                     {/* Mobile Hamburger Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden text-white/90 hover:text-saffron-400 transition-colors"
+                        className="transition-colors md:hidden text-white/90 hover:text-saffron-400"
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -97,9 +97,9 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed top-16 left-4 right-4 z-40 md:hidden"
+                        className="fixed z-40 top-16 left-4 right-4 md:hidden"
                     >
-                        <div className="glass-strong p-4 rounded-2xl border-2 border-saffron-400/30 shadow-2xl shadow-saffron-400/20 backdrop-blur-xl">
+                        <div className="p-4 border-2 shadow-2xl glass-strong rounded-2xl border-saffron-400/30 shadow-saffron-400/20 backdrop-blur-xl">
                             <div className="flex flex-col gap-3">
                                 {navLinks.map(link => (
                                     link.isHash ? (
@@ -107,7 +107,7 @@ const Navbar = () => {
                                             key={link.href}
                                             href={getLink(link.href)}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-colors py-2 px-3 rounded-lg hover:bg-saffron-400/10 border border-transparent hover:border-saffron-400/20"
+                                            className="px-3 py-2 text-sm font-medium transition-colors border border-transparent rounded-lg text-white/90 hover:text-saffron-400 hover:bg-saffron-400/10 hover:border-saffron-400/20"
                                         >
                                             {link.label}
                                         </a>
@@ -116,7 +116,7 @@ const Navbar = () => {
                                             key={link.href}
                                             to={link.href}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="text-sm font-medium text-white/90 hover:text-saffron-400 transition-colors py-2 px-3 rounded-lg hover:bg-saffron-400/10 border border-transparent hover:border-saffron-400/20"
+                                            className="px-3 py-2 text-sm font-medium transition-colors border border-transparent rounded-lg text-white/90 hover:text-saffron-400 hover:bg-saffron-400/10 hover:border-saffron-400/20"
                                         >
                                             {link.label}
                                         </Link>
@@ -124,9 +124,9 @@ const Navbar = () => {
                                 ))}
                                 <button
                                     onClick={handleRegister}
-                                    className="btn-primary text-sm py-2 px-4 rounded-lg mt-2"
+                                    className="px-4 py-2 mt-2 text-sm rounded-lg btn-primary"
                                 >
-                                    Register Now
+                                    Submit Prototype
                                 </button>
                             </div>
                         </div>

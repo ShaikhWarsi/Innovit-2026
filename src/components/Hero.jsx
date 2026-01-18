@@ -45,7 +45,7 @@ const Hero = () => {
     };
 
     useEffect(() => {
-        const phase1Deadline = new Date('2026-01-17T23:59:59');
+        const phase1Deadline = new Date('2026-02-07T23:59:59');
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -292,13 +292,13 @@ const Hero = () => {
                             rel="noopener noreferrer"
                             className="glass px-3 py-1.5 rounded-lg text-white/90 hover:text-saffron-400 border border-saffron-400/20 hover:border-saffron-400/60 hover:bg-saffron-400/10 transition-all duration-200 cursor-pointer"
                         >
-                            <span className="text-saffron-400">📅</span> Phase 1 Registration Open
+                            <span className="text-saffron-400">📅</span> Phase 2 Registration Open
                         </a>
                     </Reveal>
 
                     {/* Countdown Timer */}
                     <Reveal className="px-4 mb-8" delay={0.6}>
-                        <p className="mb-3 text-xs font-extrabold tracking-wider uppercase sm:text-lg text-white/90">Phase 1 [ Idea Submission ] Ends in </p>
+                        <p className="mb-3 text-xs font-extrabold tracking-wider uppercase sm:text-lg text-white/90">Phase 2 [ Prototype Submission ] Ends in </p>
                         <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
                             {[
                                 { label: 'Days', value: timeLeft.days, color: '#FF9933' },

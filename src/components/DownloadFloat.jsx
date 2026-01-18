@@ -24,12 +24,29 @@ const DownloadFloat = () => {
         setShowMenu(false);
     };
 
+    const handlePhase2Guidelines = () => {
+        // Download Phase 2 Guidelines PDF from public folder
+        const link = document.createElement('a');
+        link.href = '/INNOVIT_PHASE2-Guidelines.pdf';
+        link.download = 'INNOVIT_PHASE2-Guidelines.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setShowMenu(false);
+    };
+
     const menuItems = [
         {
             icon: <FileText className="w-5 h-5" />,
             label: 'Download PPT Template',
             onClick: handlePPTDownload,
             color: 'from-blue-500 to-blue-600'
+        },
+        {
+            icon: <FileText className="w-5 h-5" />,
+            label: 'Phase 2 Guidelines',
+            onClick: handlePhase2Guidelines,
+            color: 'from-green-500 to-green-600'
         },
         {
             icon: <CreditCard className="w-5 h-5" />,
@@ -40,7 +57,7 @@ const DownloadFloat = () => {
     ];
 
     return (
-        <div className="fixed right-4 sm:right-6 bottom-44 sm:bottom-48 z-50">
+        <div className="fixed z-50 right-4 sm:right-6 bottom-44 sm:bottom-48">
             <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -89,9 +106,9 @@ const DownloadFloat = () => {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: 20, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap"
+                            className="absolute mr-3 -translate-y-1/2 right-full top-1/2 whitespace-nowrap"
                         >
-                            <div className="glass-strong px-4 py-2 rounded-lg border border-yellow-500/30 shadow-lg">
+                            <div className="px-4 py-2 border rounded-lg shadow-lg glass-strong border-yellow-500/30">
                                 <p className="text-sm font-semibold text-[#fff1ce]">
                                     Download Resources
                                 </p>
@@ -105,12 +122,12 @@ const DownloadFloat = () => {
                     onClick={() => setShowMenu(!showMenu)}
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
-                    className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center shadow-2xl hover:shadow-yellow-500/50 transition-shadow group"
+                    className="relative flex items-center justify-center transition-shadow rounded-full shadow-2xl w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500 to-amber-600 hover:shadow-yellow-500/50 group"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                 >
                     {/* Pulse animation */}
-                    <span className="absolute inset-0 rounded-full bg-yellow-500 opacity-75 animate-ping"></span>
+                    <span className="absolute inset-0 bg-yellow-500 rounded-full opacity-75 animate-ping"></span>
 
                     {/* Icon */}
                     <AnimatePresence mode="wait">
@@ -122,7 +139,7 @@ const DownloadFloat = () => {
                                 exit={{ rotate: 90, opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                             >
-                                <X className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10" />
+                                <X className="relative z-10 text-white w-7 h-7 sm:w-8 sm:h-8" />
                             </motion.div>
                         ) : (
                             <motion.div
@@ -132,14 +149,14 @@ const DownloadFloat = () => {
                                 exit={{ rotate: -90, opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                             >
-                                <Download className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10" />
+                                <Download className="relative z-10 text-white w-7 h-7 sm:w-8 sm:h-8" />
                             </motion.div>
                         )}
                     </AnimatePresence>
 
                     {/* Notification badge */}
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-[#0a0a0f]">
-                        2
+                        3
                     </span>
                 </motion.button>
             </motion.div>
