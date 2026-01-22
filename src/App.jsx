@@ -13,18 +13,18 @@ import Rules from './components/Rules';
 import Guidelines from './components/Guidelines';
 import ProblemStatement from './components/ProblemStatement';
 import Results from './components/Results';
-import Certificate from './components/Certificate';
 import RegisterToast from './components/RegisterToast';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import DownloadFloat from './components/DownloadFloat';
 import IDCard from './components/IDCard';
+import Certificate from './components/Certificate';
 import Preloader from './components/Preloader';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { GlobalSpotlight } from './components/MagicEffects';
-import { Toaster } from 'react-hot-toast';
 import { useIsMobile } from './hooks/useIsMobile';
 import Background from './components/Background';
 
+// Component to conditionally render float buttons
 function FloatButtons() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
@@ -58,9 +58,6 @@ function App() {
           <div className="min-h-screen">
             {/* Navbar */}
             <Navbar />
-            
-            {/* Global Toaster */}
-            <Toaster position="top-center" reverseOrder={false} />
 
             {/* Announcement Banner */}
             <AnnouncementBanner />

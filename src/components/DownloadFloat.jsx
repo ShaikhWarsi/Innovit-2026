@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, FileText, CreditCard, X } from 'lucide-react';
+import { Download, FileText, CreditCard, X, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const DownloadFloat = () => {
@@ -21,6 +21,11 @@ const DownloadFloat = () => {
 
     const handleIDCard = () => {
         navigate('/id-card');
+        setShowMenu(false);
+    };
+
+    const handleCertificate = () => {
+        navigate('/certificate');
         setShowMenu(false);
     };
 
@@ -53,6 +58,12 @@ const DownloadFloat = () => {
             label: 'Download ID Card',
             onClick: handleIDCard,
             color: 'from-purple-500 to-purple-600'
+        },
+        {
+            icon: <Award className="w-5 h-5" />,
+            label: 'Download Certificate',
+            onClick: handleCertificate,
+            color: 'from-amber-500 to-yellow-600'
         }
     ];
 
@@ -156,7 +167,7 @@ const DownloadFloat = () => {
 
                     {/* Notification badge */}
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-[#0a0a0f]">
-                        3
+                        4
                     </span>
                 </motion.button>
             </motion.div>

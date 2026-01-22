@@ -26,7 +26,6 @@ const Navbar = () => {
         { href: '/guidelines', label: 'Guidelines', isHash: false },
         { href: '/problem-statement', label: 'Problem Statement', isHash: false },
         { href: '/results', label: 'Results', isHash: false },
-        { href: '/certificate', label: 'Certificate', isHash: false },
         { href: '/contact', label: 'Contact & FAQs', isHash: false }
     ];
 
