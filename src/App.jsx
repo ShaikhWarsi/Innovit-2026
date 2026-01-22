@@ -17,6 +17,7 @@ import RegisterToast from './components/RegisterToast';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import DownloadFloat from './components/DownloadFloat';
 import IDCard from './components/IDCard';
+import Certificate from './components/Certificate';
 import Preloader from './components/Preloader';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { GlobalSpotlight } from './components/MagicEffects';
@@ -92,6 +93,7 @@ function App() {
               <Route path="/problem-statement" element={<ProblemStatement />} />
               <Route path="/results" element={<Results />} />
               <Route path="/id-card" element={<IDCard />} />
+              <Route path="/certificate" element={<Certificate />} />
             </Routes>
 
             <Footer />
