@@ -1,372 +1,488 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, FileText, User, Mail, CheckCircle, Award, Search, CreditCard, ShieldCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { User, Mail, Download, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import Papa from 'papaparse';
+import jsPDF from 'jspdf';
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import Reveal from './Reveal';
 
 const Certificate = () => {
-  const navigate = useNavigate();
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    team: ''
-  });
-
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    const [formData, setFormData] = useState({
+        name: '',
+        teamName: '',
+        email: ''
     });
-  };
 
-  const handleVerifyUser = async () => {
-    if (!formData.email) {
-      toast.error('Please enter your email address');
-      return;
-    }
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+    const [results, setResults] = useState({});
+    const [verifiedUser, setVerifiedUser] = useState(null);
+    const [verifiedTheme, setVerifiedTheme] = useState(null);
+    const [isLoadingSupabase, setIsLoadingSupabase] = useState(true);
 
-    setIsVerifying(true);
-    setUserData(null);
+    const themes = [
+        { id: 'TH01', name: 'Open Innovation', color: '#FF9933' },
+        { id: 'TH02', name: 'Heritage & Culture', color: '#FFFFFF' },
+        { id: 'TH03', name: 'MedTech / BioTech / HealthTech', color: '#138808' },
+        { id: 'TH04', name: 'Agriculture, FoodTech & Rural Development', color: '#FF9933' },
+        { id: 'TH05', name: 'Blockchain & Cybersecurity', color: '#1E3A8A' }
+    ];
 
-    try {
-      const { data, error } = await supabase
-        .from('id_card_users')
-        .select('*')
-        .eq('email_id', formData.email.toLowerCase())
-        .single();
+    const fetchSupabaseData = async () => {
+        try {
+            setIsLoadingSupabase(true);
+            // Table name is 'id_card_users' as confirmed by fetch script
+            const { data, error } = await supabase
+                .from('id_card_users')
+                .select('*');
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          toast.error('Email not found in our database. Please use your registered email.');
-          setUserData(null);
-        } else {
-          toast.error('Verification failed. Please try again.');
+            if (error) throw error;
+            console.log('Supabase data loaded:', data?.length, 'records');
+            if (data && data.length > 0) {
+                console.log('--- DEBUG: AVAILABLE EMAILS IN SUPABASE ---');
+                console.table(data.slice(0, 10).map(p => ({ 
+                    Email: p.email_id || p.Email, 
+                    Team: p.team || p['Team Name'] 
+                })));
+                console.log('-------------------------------------------');
+            }
+        } catch (error) {
+            console.error('Error fetching from Supabase:', error);
+        } finally {
+            setIsLoadingSupabase(false);
         }
-      } else {
-        setUserData(data);
-        setFormData(prev => ({
-          ...prev,
-          name: data.name || prev.name,
-          team: data.team || prev.team
-        }));
-        toast.success('User verified! Your certificate is ready.');
-      }
-    } catch (err) {
-      console.error('Verification error:', err);
-      toast.error('An unexpected error occurred');
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+    };
 
-  const handleDownloadCertificate = () => {
-    if (!userData) {
-      toast.error('Please verify your email first');
-      return;
-    }
+    // Load results from all 5 theme CSV files
+    useEffect(() => {
+        fetchSupabaseData();
+        const loadAllResults = async () => {
+            console.log('Starting to load CSV results...');
+            const resultsData = {};
+            
+            for (const theme of themes) {
+                try {
+                    const response = await fetch(`/Result-Phase-1/${theme.id}.csv`);
+                    if (!response.ok) throw new Error(`Failed to fetch ${theme.id}.csv`);
+                    const csvText = await response.text();
+                    
+                    const result = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+                    
+                    // We don't need to merge with emails here anymore
+                    // because we are verifying emails via Supabase now.
+                    // We just need the Name/Team Name from the CSVs to match themes.
+                    resultsData[theme.id] = result.data;
+                    console.log(`Loaded ${theme.id}: ${result.data.length} records`);
+                } catch (error) {
+                    console.error(`Error loading ${theme.id}:`, error);
+                    resultsData[theme.id] = [];
+                }
+            }
+            
+            setResults(resultsData);
+            console.log('All CSV data loaded. Ready for verification.');
+        };
 
-    toast.loading('Generating your certificate...', { id: 'generating' });
+        loadAllResults();
+    }, []);
 
-    // Mock download logic
-    setTimeout(() => {
-      toast.success('Certificate downloaded successfully!', { id: 'generating' });
-      // In a real implementation, this would trigger the actual generation/download
-    }, 2000);
-  };
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
-  return (
-    <div className="min-h-screen w-full pt-24 pb-12 px-4 relative overflow-hidden bg-[#0a0a0f]">
-      {/* Toast Container */}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#1a1410',
-            color: '#fff1ce',
-            border: '1px solid rgba(245, 188, 34, 0.3)',
-          },
-        }}
-      />
+    const handleVerify = async (e) => {
+        if (e) e.preventDefault();
+        console.log('handleVerify called with:', { email: formData.email, name: formData.name });
+        
+        if (!formData.email) {
+            toast.error('Please enter your registered email address');
+            return;
+        }
 
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-yellow-500/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-600/5 blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 blur-[150px] pointer-events-none" />
+        // Check if CSV data is loaded
+        if (Object.keys(results).length === 0) {
+            toast.error('System is still loading data. Please wait a moment...');
+            return;
+        }
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        {/* Back Button */}
-        <motion.button
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => navigate('/')}
-          className="mb-8 flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors group"
-        >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-semibold">Back to Home</span>
-        </motion.button>
+        setIsVerifying(true);
+        
+        try {
+            // 1. Verify Email from Supabase and get Name and Team Name
+            // Table name is 'id_card_users'
+            const { data: sbUser, error } = await supabase
+                .from('id_card_users')
+                .select('email_id, name, team')
+                .ilike('email_id', formData.email.trim())
+                .maybeSingle();
 
-        {/* Header */}
-        <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6"
-          >
-            <Award className="w-4 h-4 text-yellow-500" />
-            <span className="text-yellow-500 text-sm font-bold tracking-wider uppercase">Official Certification</span>
-          </motion.div>
+            if (error) {
+                console.error('Supabase error:', error);
+            }
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-yellow-100 via-yellow-400 to-amber-600 mb-6 drop-shadow-sm"
-          >
-            Download Certificate
-          </motion.h1>
+            let userData = sbUser;
+            
+            if (!userData || !userData.team) {
+                toast.error('Email or Team not found in our records.');
+                setIsVerifying(false);
+                return;
+            }
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed"
-          >
-            Validate your achievements and download your official INNOVIT 2026 participation or excellence certificates.
-          </motion.p>
-        </div>
+            const teamNameFromSupabase = userData.team.trim();
+            const userNameFromSupabase = userData.name || formData.name;
+            
+            console.log('User found:', { userNameFromSupabase, teamNameFromSupabase });
 
-        <div className="grid lg:grid-cols-5 gap-8 items-start">
-          {/* Left Side: Verification Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-6"
-          >
-            <div className="glass-strong p-8 rounded-3xl border border-yellow-500/10 bg-[#111]/80 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
-              {/* Decorative gradient corner */}
-              <div className="absolute -top-12 -right-12 w-24 h-24 bg-yellow-500/10 blur-2xl rounded-full transition-all group-hover:bg-yellow-500/20" />
+            // 2. Search for Team Name in theme CSVs to get Theme ID
+            let foundTheme = null;
+            let foundInCSV = null;
+            const searchTeamName = teamNameFromSupabase.toLowerCase().trim();
+            
+            for (const theme of themes) {
+                const data = results[theme.id] || [];
+                const teamMatch = data.find(p => {
+                    const csvTeamName = (p['Team Name'] || '').toLowerCase().trim();
+                    return csvTeamName === searchTeamName;
+                });
 
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-yellow-500" />
-                User Verification
-              </h2>
+                if (teamMatch) {
+                    foundTheme = theme;
+                    foundInCSV = teamMatch;
+                    break;
+                }
+            }
 
-              <div className="space-y-6">
-                {/* Email Input */}
-                <div>
-                  <label className="block text-[#fff1ce] font-semibold mb-3 text-sm uppercase tracking-wider">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="Enter registered email"
-                      className="w-full pl-12 pr-4 py-4 bg-[#0a0a0f]/80 border border-yellow-500/20 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 transition-all font-medium"
-                    />
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500 ml-1">Use the email you used during registration.</p>
-                </div>
+            // Fallback: If team name search failed, try searching for the user's name (in case they are the leader)
+            if (!foundTheme) {
+                const searchName = userNameFromSupabase.toLowerCase().trim();
+                for (const theme of themes) {
+                    const data = results[theme.id] || [];
+                    const nameMatch = data.find(p => {
+                        const csvName = (p['Team Leader Name'] || p['Name'] || '').toLowerCase().trim();
+                        return csvName === searchName;
+                    });
 
-                {/* Name Input */}
-                <div>
-                  <label className="block text-[#fff1ce] font-semibold mb-3 text-sm uppercase tracking-wider">
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Enter your full name"
-                      className="w-full pl-12 pr-4 py-4 bg-[#0a0a0f]/80 border border-yellow-500/20 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 transition-all font-medium"
-                    />
-                  </div>
-                </div>
-
-                {/* Team Name Input */}
-                <div>
-                  <label className="block text-[#fff1ce] font-semibold mb-3 text-sm uppercase tracking-wider">
-                    Team Name
-                  </label>
-                  <div className="relative">
-                    <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
-                    <input
-                      type="text"
-                      name="team"
-                      value={formData.team}
-                      onChange={handleInputChange}
-                      placeholder="Enter team name"
-                      className="w-full pl-12 pr-4 py-4 bg-[#0a0a0f]/80 border border-yellow-500/20 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 transition-all font-medium"
-                    />
-                  </div>
-                </div>
-
-                {/* Verify Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02, translateY: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleVerifyUser}
-                  disabled={!formData.email || isVerifying}
-                  className={`
-                                        w-full py-4 rounded-2xl font-black text-lg
-                                        transition-all duration-300 flex items-center justify-center gap-3 shadow-xl
-                                        ${formData.email && !isVerifying
-                      ? 'bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 text-[#0a0a0f] hover:shadow-yellow-500/30'
-                      : 'bg-gray-800 text-gray-400 cursor-not-allowed opacity-50'
+                    if (nameMatch) {
+                        foundTheme = theme;
+                        foundInCSV = nameMatch;
+                        break;
                     }
-                                    `}
+                }
+            }
+
+            if (foundTheme) {
+                console.log('Theme match found!', { foundInCSV, foundTheme, teamNameFromSupabase });
+                setVerifiedUser({
+                    ...foundInCSV,
+                    'Team Name': teamNameFromSupabase, // Use exact team name from Supabase
+                    'Name': userNameFromSupabase // Use exact name from Supabase
+                });
+                setVerifiedTheme(foundTheme);
+                setIsVerified(true);
+                
+                // Update form data with fetched info
+                setFormData(prev => ({
+                    ...prev,
+                    name: userNameFromSupabase,
+                    teamName: teamNameFromSupabase
+                }));
+                
+                toast.success(`Verified! Theme: ${foundTheme.name}`);
+            } else {
+                console.log('Team/Name not found in any theme records:', { searchTeamName, userNameFromSupabase });
+                toast.error('Your team was not found in any theme records. Please contact support.');
+            }
+        } catch (err) {
+            console.error('Verification error:', err);
+            toast.error('An error occurred during verification. Please try again.');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
+    const generateCertificate = async () => {
+        setIsGenerating(true);
+        try {
+            // Fetch the PDF template
+            const templateUrl = '/phase-1-innovit_certitcate (1).pdf';
+            const templateBytes = await fetch(templateUrl).then(res => {
+                if (!res.ok) throw new Error('Failed to download template');
+                return res.arrayBuffer();
+            });
+
+            // Load the PDF document
+            const pdfDoc = await PDFDocument.load(templateBytes);
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            const { width, height } = firstPage.getSize();
+            console.log('PDF Dimensions:', width, 'x', height);
+
+            // Embed fonts (Times New Roman)
+            const fontBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+            const fontRegular = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+            // Coordinates calculation for the provided template
+            // The template seems to have name field around Y=500 (middle)
+            // pdf-lib uses bottom-left origin
+            
+            // Name & Team: Combined on the first blank line
+            const formatToTitleCase = (str) => {
+                if (!str) return '';
+                return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            };
+            
+            const displayName = formatToTitleCase(formData.name);
+            const displayTeam = formatToTitleCase(formData.teamName);
+            const combinedNameTeam = `${displayName} | Team: ${displayTeam}`;
+            
+            const nameFontSize = 24; // Slightly smaller to fit both on one line
+            const nameWidth = fontBold.widthOfTextAtSize(combinedNameTeam, nameFontSize);
+            
+            firstPage.drawText(combinedNameTeam, {
+                x: width / 2 - nameWidth / 2 + 85, 
+                y: height - 262,                  
+                size: nameFontSize,
+                font: fontBold,
+                color: rgb(0, 0, 0), // #FF8A2E
+            });
+
+            // Theme: On the second line
+            const themeText = `${verifiedTheme.id} : ${verifiedTheme.name}`;
+            const themeFontSize = 22; // Increased from 18 to 20
+            const themeWidth = fontRegular.widthOfTextAtSize(themeText, themeFontSize);
+            firstPage.drawText(themeText, {
+                x: width / 2 - themeWidth / 2 + 85, 
+                y: height - 377, 
+                size: themeFontSize,
+                font: fontRegular,
+                color: rgb(0.12, 0.16, 0.22), // #1F2937
+            });
+
+            // Date: SUPPLEMENTARY (The template already has a date line, but we can add ours if needed)
+            const today = new Date().toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const dateFontSize = 12;
+            const dateWidth = fontRegular.widthOfTextAtSize(today, dateFontSize);
+            firstPage.drawText(today, {
+                x: 180, // Near pre-printed "Date: 18/01/2026"
+                y: height - 718, 
+                size: dateFontSize,
+                font: fontRegular,
+                color: rgb(0.12, 0.16, 0.22),
+            });
+
+            // Serialize the PDFDocument to bytes (a Uint8Array)
+            const pdfBytes = await pdfDoc.save();
+
+            // Create a blob and download
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Certificate_${formData.name.replace(/\s+/g, '_')}.pdf`;
+            link.click();
+            
+            toast.success('Certificate generated successfully!');
+        } catch (error) {
+            console.error('Error generating certificate:', error);
+            toast.error('Failed to generate certificate: ' + error.message);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen pt-24 pb-12 px-4 relative overflow-hidden">
+            {/* Background elements to match site theme */}
+            <div className="absolute top-0 left-0 w-full h-[500px] bg-yellow-500/5 blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-600/5 blur-[100px] pointer-events-none" />
+
+            <div className="max-w-4xl mx-auto relative z-10">
+                <Link 
+                    to="/" 
+                    className="inline-flex items-center gap-2 text-yellow-400/70 hover:text-yellow-400 transition-colors mb-8 group"
                 >
-                  {isVerifying ? (
-                    <>
-                      <div className="w-6 h-6 border-3 border-[#0a0a0f]/30 border-t-[#0a0a0f] rounded-full animate-spin" />
-                      <span>Verifying...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-6 h-6" />
-                      <span>Generate Preview</span>
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </div>
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    Back to Home
+                </Link>
 
-            {/* Info Card */}
-            <div className="glass-strong p-6 rounded-3xl border border-blue-500/10 bg-blue-500/5">
-              <div className="flex gap-4">
-                <div className="p-3 rounded-2xl bg-blue-500/10">
-                  <FileText className="w-6 h-6 text-blue-400" />
-                </div>
-                <div>
-                  <h4 className="text-blue-400 font-bold mb-1">Email Verification Required</h4>
-                  <p className="text-sm text-blue-200/60 leading-relaxed">
-                    You must use your registered email address to download your certificate. Manual entries are not permitted for security and authenticity.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Side: Preview Display */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="lg:col-span-3 space-y-6"
-          >
-            <div className="glass-strong p-8 rounded-3xl border border-white/10 bg-[#111]/80 backdrop-blur-2xl shadow-2xl min-h-[500px] flex flex-col">
-              <h2 className="text-2xl font-bold text-white mb-8">Certificate Preview</h2>
-
-              <AnimatePresence mode="wait">
-                {userData ? (
-                  <motion.div
-                    key="preview"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="flex-1 flex flex-col"
-                  >
-                    {/* Premium Certificate Mockup */}
-                    <div className="relative flex-1 bg-gradient-to-br from-[#1a1410] to-[#0a0a0f] rounded-2xl border-4 border-[#c5a059]/30 p-8 flex flex-col items-center justify-center text-center overflow-hidden mb-8">
-                      {/* Decorative Corner Borders */}
-                      <div className="absolute top-4 left-4 w-12 h-12 border-l-2 border-t-2 border-[#c5a059]/50" />
-                      <div className="absolute top-4 right-4 w-12 h-12 border-r-2 border-t-2 border-[#c5a059]/50" />
-                      <div className="absolute bottom-4 left-4 w-12 h-12 border-l-2 border-b-2 border-[#c5a059]/50" />
-                      <div className="absolute bottom-4 right-4 w-12 h-12 border-r-2 border-b-2 border-[#c5a059]/50" />
-
-                      {/* Watermark Logo */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-                        <Award className="w-96 h-96" />
-                      </div>
-
-                      <div className="relative z-10 w-full">
-                        <div className="flex justify-center mb-6">
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                            <Award className="w-10 h-10 text-[#0a0a0f]" />
-                          </div>
-                        </div>
-
-                        <p className="text-[#c5a059] font-black tracking-[0.3em] uppercase mb-4 text-sm">Certificate of Participation</p>
-
-                        <h3 className="text-lg text-gray-400 font-medium mb-2">This is to certify that</h3>
-
-                        <h2 className="text-3xl md:text-5xl font-black text-white mb-6 font-serif">
-                          {userData.name}
-                        </h2>
-
-                        <p className="text-gray-400 max-w-md mx-auto leading-relaxed mb-8">
-                          of team <span className="text-yellow-400 font-bold">{userData.team || 'Creative Squad'}</span> has successfully participated in
-                          <span className="text-white font-bold italic"> INNOVIT 2026 Hackathon</span>, showcasing exceptional innovation and technical skills.
+                <Reveal>
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl md:text-6xl font-bold gradient-text mb-4">
+                            Participation Certificate
+                        </h1>
+                        <p className="text-[#fbe9bb] text-lg max-w-2xl mx-auto">
+                            Enter your details as registered to verify and download your INNOVIT 2026 participation certificate.
                         </p>
+                    </div>
+                </Reveal>
 
-                        <div className="grid grid-cols-2 gap-12 pt-8 border-t border-white/5 w-full max-w-lg mx-auto">
-                          <div className="text-center">
-                            <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#c5a059]/50 to-transparent mb-2" />
-                            <p className="text-xs text-gray-500 uppercase font-bold tracking-widest">Organizing Chair</p>
-                          </div>
-                          <div className="text-center">
-                            <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#c5a059]/50 to-transparent mb-2" />
-                            <p className="text-xs text-gray-500 uppercase font-bold tracking-widest">Co-Organizer</p>
-                          </div>
+                <div className="grid md:grid-cols-2 gap-8 items-start">
+                    {/* Form Section */}
+                    <Reveal delay={0.2}>
+                        <div className="glass-strong p-8 rounded-3xl border border-yellow-500/20 shadow-2xl shadow-yellow-500/5">
+                            <form onSubmit={handleVerify} className="space-y-6">
+                                {!isVerified && (
+                                    <div>
+                                        <label className="block text-[#fff1ce] font-semibold mb-2">Email Address</label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter registered email"
+                                                className="w-full pl-12 pr-4 py-3 bg-[#0a0a0f]/50 border border-yellow-500/20 rounded-xl text-[#fff1ce] focus:outline-none focus:border-yellow-400/50 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {isVerified && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="space-y-4"
+                                    >
+                                        <div>
+                                            <label className="block text-[#fff1ce]/50 text-sm mb-1">Full Name</label>
+                                            <div className="relative">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/30" />
+                                                <input
+                                                    type="text"
+                                                    value={formData.name}
+                                                    disabled
+                                                    className="w-full pl-12 pr-4 py-3 bg-[#0a0a0f]/30 border border-yellow-500/10 rounded-xl text-[#fff1ce]/70 cursor-not-allowed"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[#fff1ce]/50 text-sm mb-1">Team Name</label>
+                                            <div className="relative">
+                                                <CheckCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/30" />
+                                                <input
+                                                    type="text"
+                                                    value={formData.teamName}
+                                                    disabled
+                                                    className="w-full pl-12 pr-4 py-3 bg-[#0a0a0f]/30 border border-yellow-500/10 rounded-xl text-[#fff1ce]/70 cursor-not-allowed"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[#fff1ce]/50 text-sm mb-1">Theme</label>
+                                            <div className="relative text-yellow-400/90 font-semibold px-4 py-2 bg-yellow-500/5 rounded-lg border border-yellow-500/10">
+                                                {verifiedTheme?.name}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {!isVerified ? (
+                                    <button
+                                        type="submit"
+                                        disabled={isVerifying}
+                                        className="w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl text-black font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform disabled:opacity-50"
+                                    >
+                                        {isVerifying ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                                Verifying Details...
+                                            </>
+                                        ) : (
+                                            'Verify Details'
+                                        )}
+                                    </button>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3 text-green-400">
+                                            <CheckCircle className="w-5 h-5" />
+                                            <span>Details verified successfully!</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={generateCertificate}
+                                            disabled={isGenerating}
+                                            className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-black font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform"
+                                        >
+                                            {isGenerating ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                                    Generating PDF...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Download className="w-5 h-5" />
+                                                    Download Certificate
+                                                </>
+                                            )}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsVerified(false)}
+                                            className="w-full text-yellow-400/70 hover:text-yellow-400 text-sm transition-colors"
+                                        >
+                                            Use different details
+                                        </button>
+                                    </div>
+                                )}
+                            </form>
                         </div>
-                      </div>
-                    </div>
+                    </Reveal>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleDownloadCertificate}
-                        className="flex-1 bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:shadow-white/10 transition-all"
-                      >
-                        <Download className="w-5 h-5" />
-                        Download PDF
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex-1 bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all"
-                      >
-                        <FileText className="w-5 h-5" />
-                        Share Certificate
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="empty"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex-1 flex flex-col items-center justify-center text-center p-12"
-                  >
-                    <div className="w-24 h-24 rounded-full bg-yellow-500/5 flex items-center justify-center mb-6 relative">
-                      <div className="absolute inset-0 bg-yellow-500/10 rounded-full animate-pulse" />
-                      <Search className="w-10 h-10 text-yellow-500/30" />
-                    </div>
-                    <h3 className="text-xl font-bold text-[#fff1ce] mb-2">No Certificate Selected</h3>
-                    <p className="text-gray-500 max-w-xs leading-relaxed">
-                      Please enter and verify your registered email address to unlock your certificates.
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {/* Preview/Info Section */}
+                    <Reveal delay={0.4}>
+                        <div className="space-y-6">
+                            <div className="glass-strong p-8 rounded-3xl border border-yellow-500/10 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-yellow-500/10 transition-colors" />
+                                
+                                <h3 className="text-xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
+                                    <AlertCircle className="w-5 h-5" />
+                                    Instructions
+                                </h3>
+                                <ul className="space-y-4 text-[#fbe9bb]/80 text-sm">
+                                    <li className="flex gap-3">
+                                        <span className="w-6 h-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center flex-shrink-0 text-yellow-400">1</span>
+                                        <span>Enter your registered email address to verify your participation.</span>
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-6 h-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center flex-shrink-0 text-yellow-400">2</span>
+                                        <span>Your email will be cross-checked with the official INNOVIT 2026 participant records across all themes.</span>
+                                    </li>
+                                    <li className="flex gap-3">
+                                        <span className="w-6 h-6 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center flex-shrink-0 text-yellow-400">3</span>
+                                        <span>Once verified, you can download your certificate with your registered team and theme details.</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="glass-strong p-4 rounded-3xl border border-yellow-500/10 aspect-[1.414/1] flex items-center justify-center relative group overflow-hidden">
+                                <div className="absolute inset-0 bg-white/5" />
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-10">
+                                    <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
+                                        <Download className="w-8 h-8 text-yellow-400" />
+                                    </div>
+                                    <p className="text-yellow-400 font-bold text-lg">Official Certificate Template</p>
+                                    <p className="text-[#fbe9bb]/60 text-sm mt-2 max-w-[200px]">
+                                        Your details will be printed on the official INNOVIT 2026 Phase-1 design
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </Reveal>
+                </div>
             </div>
-          </motion.div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Certificate;
