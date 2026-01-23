@@ -18,6 +18,7 @@ import WhatsAppFloat from './components/WhatsAppFloat';
 import DownloadFloat from './components/DownloadFloat';
 import IDCard from './components/IDCard';
 import Certificate from './components/Certificate';
+import VerifyCertificate from './components/VerifyCertificate';
 import Preloader from './components/Preloader';
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { GlobalSpotlight } from './components/MagicEffects';
@@ -94,6 +95,7 @@ function App() {
               <Route path="/results" element={<Results />} />
               <Route path="/id-card" element={<IDCard />} />
               <Route path="/certificate" element={<Certificate />} />
+              <Route path="/verify-certificate" element={<VerifyCertificate />} />
             </Routes>
 
             <Footer />

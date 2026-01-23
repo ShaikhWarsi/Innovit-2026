@@ -21,6 +21,7 @@
     "papaparse": "^5.5.3",
     "pdf-lib": "^1.17.1",
     "postprocessing": "^6.38.1",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.6.0",

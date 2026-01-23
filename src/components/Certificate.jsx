@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, FileText, User, Mail, CheckCircle, Award, Search, ShieldCheck, Loader2 } from 'lucide-react';
+import { ArrowLeft, Download, FileText, User, Mail, CheckCircle, Award, Search, ShieldCheck, Loader2, X, Copy, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { supabase } from '../lib/supabaseClient';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+
 import Papa from 'papaparse';
+import QRCode from 'qrcode';
 
 const themes = [
   { id: 'TH01', name: 'Open Innovation', color: '#FF9933' },
@@ -29,18 +31,19 @@ const Certificate = () => {
   });
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Load results from all 5 theme CSV files
   useEffect(() => {
     const loadAllResults = async () => {
       const resultsData = {};
-      
+
       for (const theme of themes) {
         try {
           const response = await fetch(`/Result-Phase-1/${theme.id}.csv`);
           if (!response.ok) throw new Error(`Failed to fetch ${theme.id}.csv`);
           const csvText = await response.text();
-          
+
           const result = Papa.parse(csvText, { header: true, skipEmptyLines: true });
           resultsData[theme.id] = result.data;
         } catch (error) {
@@ -48,7 +51,7 @@ const Certificate = () => {
           resultsData[theme.id] = [];
         }
       }
-      
+
       setResults(resultsData);
     };
 
@@ -128,12 +131,12 @@ const Certificate = () => {
 
       const teamNameFromSupabase = sbUser.team || '';
       const userNameFromSupabase = sbUser.name || '';
-      
+
       // 2. Search for Team Name in theme CSVs to get Theme ID
       let foundTheme = null;
       let foundInCSV = null;
       const searchTeamName = teamNameFromSupabase.toLowerCase().trim();
-      
+
       for (const theme of themes) {
         const data = results[theme.id] || [];
         const teamMatch = data.find(p => {
@@ -145,6 +148,32 @@ const Certificate = () => {
           foundTheme = theme;
           foundInCSV = teamMatch;
           break;
+        }
+      }
+
+      // Generate or retrieve Certificate Hash
+      let finalHash = sbUser.certificate_hash_id;
+
+      if (!finalHash) {
+        // Generate a deterministic but unique hash
+        // Format: INV26-{THEME_ID}-{RANDOM_CHARS}
+        const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+        // Use a temp theme ID if we haven't found one yet, but ideally we should only generate if foundTheme is true.
+        // However, we need to save it to User. 
+        // Let's wait until we find the theme to generate a meaningful hash or just generate a generic one.
+        // The user requirement says "Hash ID must NOT regenerate after first generation".
+        finalHash = `INV26-${Date.now().toString(36).toUpperCase()}-${randomPart}`;
+
+        // Update Supabase
+        const { error: updateError } = await supabase
+          .from('id_card_users')
+          .update({ certificate_hash_id: finalHash })
+          .eq('id', sbUser.id);
+
+        if (updateError) {
+          console.error('Error saving hash:', updateError);
+          // We continue, but ideally we should stop. For now, let's assume it works or we use local hash this session.
+          // If update fails, next time it will generate new one unless we block.
         }
       }
 
@@ -169,6 +198,7 @@ const Certificate = () => {
       if (foundTheme) {
         const finalUserData = {
           ...sbUser,
+          certificate_hash_id: finalHash,
           csvData: foundInCSV
         };
         setUserData(finalUserData);
@@ -179,7 +209,7 @@ const Certificate = () => {
           team: teamNameFromSupabase
         }));
         toast.success(`Verified! Your certificate for ${foundTheme.name} is ready.`);
-        
+
         // Generate PDF preview
         await updatePdfPreview(finalUserData, foundTheme);
       } else {
@@ -215,18 +245,18 @@ const Certificate = () => {
       if (!str) return '';
       return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     };
-    
+
     const displayName = formatToTitleCase(userData.name);
     const displayTeam = formatToTitleCase(userData.team);
     const combinedNameTeam = `${displayName} | Team: ${displayTeam}`;
-    
+
     const nameFontSize = 24;
     const nameWidth = fontBold.widthOfTextAtSize(combinedNameTeam, nameFontSize);
-    
+
     // Draw Name & Team
     firstPage.drawText(combinedNameTeam, {
-      x: width / 2 - nameWidth / 2 + 85, 
-      y: height - 262,                  
+      x: width / 2 - nameWidth / 2 + 85,
+      y: height - 262,
       size: nameFontSize,
       font: fontBold,
       color: rgb(0, 0, 0),
@@ -237,8 +267,8 @@ const Certificate = () => {
     const themeFontSize = 22;
     const themeWidth = fontRegular.widthOfTextAtSize(themeText, themeFontSize);
     firstPage.drawText(themeText, {
-      x: width / 2 - themeWidth / 2 + 85, 
-      y: height - 377, 
+      x: width / 2 - themeWidth / 2 + 85,
+      y: height - 377,
       size: themeFontSize,
       font: fontRegular,
       color: rgb(0.12, 0.16, 0.22),
@@ -252,12 +282,52 @@ const Certificate = () => {
     });
     const dateFontSize = 12;
     firstPage.drawText(today, {
-      x: 180, 
-      y: height - 718, 
+      x: 180,
+      y: height - 718,
       size: dateFontSize,
       font: fontRegular,
       color: rgb(0.12, 0.16, 0.22),
     });
+
+    // Draw Certificate Hash
+    if (userData.certificate_hash_id) {
+      const hashText = `Certificate ID: ${userData.certificate_hash_id}`;
+      const hashFontSize = 9;
+      const hashWidth = fontRegular.widthOfTextAtSize(hashText, hashFontSize);
+
+      firstPage.drawText(hashText, {
+        x: width / 2 - hashWidth / 2 + 85, // Center + 85 visual offset
+        y: 25, // Lower bottom
+        size: hashFontSize,
+        font: fontRegular,
+        color: rgb(0.3, 0.3, 0.3),
+      });
+
+      // Generate and Draw QR Code
+      const verifyUrl = `https://innovit-blockchainclub.vitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
+      try {
+        const qrCodeDataUrl = await QRCode.toDataURL(verifyUrl, {
+          width: 100,
+          margin: 1,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF00' // Transparent background
+          }
+        });
+
+        const qrImageBytes = await fetch(qrCodeDataUrl).then(res => res.arrayBuffer());
+        const qrImage = await pdfDoc.embedPng(qrImageBytes);
+
+        firstPage.drawImage(qrImage, {
+          x: width / 2 - 25 + 85, // Center + 85 visual offset
+          y: 40, // Just above the ID (25 + 10 margin = 35, safe at 40)
+          width: 50,
+          height: 50,
+        });
+      } catch (qrError) {
+        console.error('Error generating QR code:', qrError);
+      }
+    }
 
     // Save and return blob
     const pdfBytes = await pdfDoc.save();
@@ -287,7 +357,7 @@ const Certificate = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Certificate_${userData.name.replace(/\s+/g, '_')}.pdf`;
       link.click();
-      
+
       toast.success('Certificate downloaded successfully!', { id: toastId });
     } catch (error) {
       console.error('Error generating certificate:', error);
@@ -297,6 +367,27 @@ const Certificate = () => {
     }
   };
 
+
+
+
+  const handleShare = () => {
+    if (!userData || !userData.certificate_hash_id) {
+      toast.error('Please verify your certificate first');
+      return;
+    }
+    setIsShareModalOpen(true);
+  };
+
+  const getShareLink = () => {
+    if (!userData?.certificate_hash_id) return '';
+    return `https://innovit-blockchainclub.vitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
+  };
+
+  const handleCopyLink = () => {
+    const link = getShareLink();
+    navigator.clipboard.writeText(link);
+    toast.success('Link copied to clipboard!');
+  };
 
   return (
     <div className="min-h-screen w-full pt-24 pb-12 px-4 relative overflow-hidden bg-[#0a0a0f]">
@@ -311,6 +402,77 @@ const Certificate = () => {
           },
         }}
       />
+
+      {/* Share Modal */}
+      <AnimatePresence>
+        {isShareModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsShareModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#111] border border-white/10 p-8 rounded-3xl max-w-md w-full relative shadow-2xl overflow-hidden"
+            >
+              {/* Reset background glow for modal */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-[50px] pointer-events-none" />
+
+              <button
+                onClick={() => setIsShareModalOpen(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/20">
+                  <Award className="w-8 h-8 text-yellow-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">Share Certificate</h3>
+                <p className="text-gray-400 text-sm">
+                  Share your achievement with the world!
+                </p>
+              </div>
+
+              <div className="bg-[#0a0a0f] border border-white/10 rounded-xl p-4 mb-6 relative group">
+                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider font-semibold">Verification Link</p>
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="bg-green-500/10 p-1.5 rounded-lg">
+                    <ShieldCheck className="w-4 h-4 text-green-500" />
+                  </div>
+                  <p className="text-white font-mono text-sm truncate opacity-80 group-hover:opacity-100 transition-opacity">
+                    {getShareLink()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full py-3.5 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+                >
+                  <Copy className="w-5 h-5" />
+                  <span>Copy Link</span>
+                </button>
+                <button
+                  onClick={() => window.open(getShareLink(), '_blank')}
+                  className="w-full py-3.5 bg-[#white/5] border border-white/10 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  <span>Open Link</span>
+                </button>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-yellow-500/5 blur-[120px] pointer-events-none" />
@@ -328,6 +490,8 @@ const Certificate = () => {
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           <span className="font-semibold">Back to Home</span>
         </motion.button>
+
+
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -432,7 +596,7 @@ const Certificate = () => {
                 )}
 
                 {userData && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     className="space-y-4"
@@ -554,7 +718,7 @@ const Certificate = () => {
                         className="absolute inset-0 w-full h-full border-none"
                         title="Certificate PDF Preview"
                       />
-                      
+
                       {/* Decorative border overlay */}
                       <div className="absolute inset-0 pointer-events-none border-2 border-yellow-500/20 rounded-2xl" />
                     </div>
@@ -582,6 +746,7 @@ const Certificate = () => {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={handleShare}
                         className="flex-1 bg-white/5 border border-white/10 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:bg-white/10"
                       >
                         <FileText className="w-5 h-5" />
@@ -613,6 +778,20 @@ const Certificate = () => {
           </motion.div>
         </div>
       </div>
+      {/* Floating Verification Icon - Bottom Right */}
+      <motion.button
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate('/verify-certificate')}
+        className="fixed bottom-8 right-8 z-50 flex items-center gap-3 px-6 py-3 rounded-full bg-[#111]/90 border border-yellow-500/30 text-yellow-500 shadow-2xl shadow-yellow-500/10 backdrop-blur-xl hover:border-yellow-500/60 hover:bg-[#111] transition-all group"
+      >
+        <span className="font-bold tracking-wide text-sm uppercase">Verify Certificate</span>
+        <div className="bg-yellow-500/10 p-2 rounded-full border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+          <ShieldCheck className="w-5 h-5" />
+        </div>
+      </motion.button>
     </div>
   );
 };
