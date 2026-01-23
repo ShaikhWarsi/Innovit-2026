@@ -491,18 +491,7 @@ const Certificate = () => {
           <span className="font-semibold">Back to Home</span>
         </motion.button>
 
-        {/* Verify Link - Top Right */}
-        <div className="absolute top-0 right-0 z-20">
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            onClick={() => navigate('/verify-certificate')}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all text-sm font-medium"
-          >
-            <ShieldCheck className="w-4 h-4 text-green-400" />
-            <span>Verify Certificate</span>
-          </motion.button>
-        </div>
+
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -789,6 +778,20 @@ const Certificate = () => {
           </motion.div>
         </div>
       </div>
+      {/* Floating Verification Icon - Bottom Right */}
+      <motion.button
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate('/verify-certificate')}
+        className="fixed bottom-8 right-8 z-50 flex items-center gap-3 px-6 py-3 rounded-full bg-[#111]/90 border border-yellow-500/30 text-yellow-500 shadow-2xl shadow-yellow-500/10 backdrop-blur-xl hover:border-yellow-500/60 hover:bg-[#111] transition-all group"
+      >
+        <span className="font-bold tracking-wide text-sm uppercase">Verify Certificate</span>
+        <div className="bg-yellow-500/10 p-2 rounded-full border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+          <ShieldCheck className="w-5 h-5" />
+        </div>
+      </motion.button>
     </div>
   );
 };
