@@ -132,37 +132,160 @@ const Certificate = () => {
 
       const teamNameFromSupabase = sbUser.team || '';
       const userNameFromSupabase = sbUser.name || '';
+      let leaderName = '';
 
-      // 2. Search for Team Name in theme CSVs to get Theme ID
+      // 2. Identify the Team Leader
+      if (sbUser.team_position === 'Leader') {
+        leaderName = userNameFromSupabase;
+      } else if (teamNameFromSupabase) {
+        // Find all potential leaders for this team (CASE-SENSITIVE)
+        // This distinguishes between "RunTime Terrors" and "Runtime Terrors"
+        const { data: potentialLeaders, error: leaderError } = await supabase
+          .from('id_card_users')
+          .select('name, team, created_at')
+          .eq('team', teamNameFromSupabase.trim())
+          .eq('team_position', 'Leader');
+
+        if (!leaderError && potentialLeaders && potentialLeaders.length > 0) {
+          // Disambiguate if multiple leaders found for the EXACT same team name
+          // (Picks the one closest in registration time)
+          let bestLeader = null;
+          if (potentialLeaders.length === 1) {
+            bestLeader = potentialLeaders[0];
+          } else {
+            const userTime = new Date(sbUser.created_at).getTime();
+            bestLeader = potentialLeaders.reduce((prev, curr) => {
+              const prevDiff = Math.abs(new Date(prev.created_at).getTime() - userTime);
+              const currDiff = Math.abs(new Date(curr.created_at).getTime() - userTime);
+              return currDiff < prevDiff ? curr : prev;
+            });
+          }
+          leaderName = bestLeader.name;
+        } else {
+          // Fallback if no exact case leader found, try case-insensitive as a last resort
+          const { data: caseInsensitiveLeaders } = await supabase
+            .from('id_card_users')
+            .select('name, team, created_at')
+            .ilike('team', teamNameFromSupabase.trim())
+            .eq('team_position', 'Leader');
+
+          if (caseInsensitiveLeaders && caseInsensitiveLeaders.length > 0) {
+            const userTime = new Date(sbUser.created_at).getTime();
+            const bestLeader = caseInsensitiveLeaders.reduce((prev, curr) => {
+              const prevDiff = Math.abs(new Date(prev.created_at).getTime() - userTime);
+              const currDiff = Math.abs(new Date(curr.created_at).getTime() - userTime);
+              return currDiff < prevDiff ? curr : prev;
+            });
+            leaderName = bestLeader.name;
+          } else {
+            leaderName = userNameFromSupabase;
+          }
+        }
+      }
+
+      // 3. Search for Team Name and Leader Name in theme CSVs to get Theme ID
       let foundTheme = null;
       let foundInCSV = null;
-      const searchTeamName = teamNameFromSupabase.toLowerCase().trim();
+      
+      const cleanName = (name) => (name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const supabaseTeamName = teamNameFromSupabase.trim();
+      const supabaseLeaderNameClean = cleanName(leaderName);
 
+      // STEP A: Try Exact Case Match for Team Name + Normalized Leader Name
       for (const theme of themes) {
         const data = results[theme.id] || [];
-        const teamMatch = data.find(p => {
-          const csvTeamName = (p['Team Name'] || '').toLowerCase().trim();
-          return csvTeamName === searchTeamName;
+        const match = data.find(p => {
+          const csvTeamName = (p['Team Name'] || '').trim();
+          const csvLeaderNameClean = cleanName(p['Team Leader Name'] || '');
+          return csvTeamName === supabaseTeamName && csvLeaderNameClean === supabaseLeaderNameClean;
         });
 
-        if (teamMatch) {
+        if (match) {
           foundTheme = theme;
-          foundInCSV = teamMatch;
+          foundInCSV = match;
           break;
         }
       }
 
-      // Generate or retrieve Certificate Hash
+      // STEP B: Try Case-Insensitive Team Name + Normalized Leader Name (Fallback)
+      if (!foundTheme) {
+        const supabaseTeamNameLower = supabaseTeamName.toLowerCase();
+        for (const theme of themes) {
+          const data = results[theme.id] || [];
+          const match = data.find(p => {
+            const csvTeamNameLower = (p['Team Name'] || '').trim().toLowerCase();
+            const csvLeaderNameClean = cleanName(p['Team Leader Name'] || '');
+            return csvTeamNameLower === supabaseTeamNameLower && csvLeaderNameClean === supabaseLeaderNameClean;
+          });
+
+          if (match) {
+            foundTheme = theme;
+            foundInCSV = match;
+            break;
+          }
+        }
+      }
+
+      // STEP C: Try matching just Team Name with Exact Case
+      if (!foundTheme) {
+        for (const theme of themes) {
+          const data = results[theme.id] || [];
+          const match = data.find(p => {
+            const csvTeamName = (p['Team Name'] || '').trim();
+            return csvTeamName === supabaseTeamName;
+          });
+
+          if (match) {
+            foundTheme = theme;
+            foundInCSV = match;
+            break;
+          }
+        }
+      }
+
+      // STEP D: Final Fallback: Original case-insensitive logic
+      if (!foundTheme) {
+        const searchTeamName = teamNameFromSupabase.toLowerCase().trim();
+        for (const theme of themes) {
+          const data = results[theme.id] || [];
+          const teamMatch = data.find(p => {
+            const csvTeamName = (p['Team Name'] || '').toLowerCase().trim();
+            return csvTeamName === searchTeamName;
+          });
+
+          if (teamMatch) {
+            foundTheme = theme;
+            foundInCSV = teamMatch;
+            break;
+          }
+        }
+      }
+
+      // STEP E: Last resort: Search by user's own name
+      if (!foundTheme) {
+        const searchName = cleanName(userNameFromSupabase);
+        for (const theme of themes) {
+          const data = results[theme.id] || [];
+          const nameMatch = data.find(p => {
+            const csvLeaderName = cleanName(p['Team Leader Name'] || p['Name'] || '');
+            return csvLeaderName === searchName;
+          });
+
+          if (nameMatch) {
+            foundTheme = theme;
+            foundInCSV = nameMatch;
+            break;
+          }
+        }
+      }
+
+      // 6. Generate or retrieve Certificate Hash
       let finalHash = sbUser.certificate_hash_id;
 
-      if (!finalHash) {
+      if (foundTheme && !finalHash) {
         // Generate a deterministic but unique hash
         // Format: INV26-{THEME_ID}-{RANDOM_CHARS}
         const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-        // Use a temp theme ID if we haven't found one yet, but ideally we should only generate if foundTheme is true.
-        // However, we need to save it to User. 
-        // Let's wait until we find the theme to generate a meaningful hash or just generate a generic one.
-        // The user requirement says "Hash ID must NOT regenerate after first generation".
         finalHash = `INV26-${Date.now().toString(36).toUpperCase()}-${randomPart}`;
 
         // Update Supabase
@@ -173,26 +296,6 @@ const Certificate = () => {
 
         if (updateError) {
           console.error('Error saving hash:', updateError);
-          // We continue, but ideally we should stop. For now, let's assume it works or we use local hash this session.
-          // If update fails, next time it will generate new one unless we block.
-        }
-      }
-
-      // Fallback: Try searching for the user's name
-      if (!foundTheme) {
-        const searchName = userNameFromSupabase.toLowerCase().trim();
-        for (const theme of themes) {
-          const data = results[theme.id] || [];
-          const nameMatch = data.find(p => {
-            const csvName = (p['Team Leader Name'] || p['Name'] || '').toLowerCase().trim();
-            return csvName === searchName;
-          });
-
-          if (nameMatch) {
-            foundTheme = theme;
-            foundInCSV = nameMatch;
-            break;
-          }
         }
       }
 
