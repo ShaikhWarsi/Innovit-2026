@@ -140,10 +140,11 @@ const Certificate = () => {
       } else if (teamNameFromSupabase) {
         // Find all potential leaders for this team (CASE-SENSITIVE)
         // This distinguishes between "RunTime Terrors" and "Runtime Terrors"
+        // We use the exact team name from the user's record (including any spaces)
         const { data: potentialLeaders, error: leaderError } = await supabase
           .from('id_card_users')
           .select('name, team, created_at')
-          .eq('team', teamNameFromSupabase.trim())
+          .eq('team', teamNameFromSupabase)
           .eq('team_position', 'Leader');
 
         if (!leaderError && potentialLeaders && potentialLeaders.length > 0) {
@@ -162,11 +163,12 @@ const Certificate = () => {
           }
           leaderName = bestLeader.name;
         } else {
-          // Fallback if no exact case leader found, try case-insensitive as a last resort
+          // Fallback if no exact case leader found, try case-insensitive
+          // We search for the team name as is, and also trimmed
           const { data: caseInsensitiveLeaders } = await supabase
             .from('id_card_users')
             .select('name, team, created_at')
-            .ilike('team', teamNameFromSupabase.trim())
+            .ilike('team', teamNameFromSupabase)
             .eq('team_position', 'Leader');
 
           if (caseInsensitiveLeaders && caseInsensitiveLeaders.length > 0) {
