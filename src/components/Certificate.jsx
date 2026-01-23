@@ -32,6 +32,7 @@ const Certificate = () => {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState(null);
 
   // Load results from all 5 theme CSV files
   useEffect(() => {
@@ -304,7 +305,7 @@ const Certificate = () => {
       });
 
       // Generate and Draw QR Code
-      const verifyUrl = `https://innovit-blockchainclub.vitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
+      const verifyUrl = `https://innovit-2026.blockchainvitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
       try {
         const qrCodeDataUrl = await QRCode.toDataURL(verifyUrl, {
           width: 100,
@@ -370,23 +371,46 @@ const Certificate = () => {
 
 
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!userData || !userData.certificate_hash_id) {
       toast.error('Please verify your certificate first');
       return;
     }
+    
+    // Generate QR code for share modal
+    try {
+      const verifyUrl = getShareLink();
+      const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      setQrCodeUrl(qrDataUrl);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+    
     setIsShareModalOpen(true);
   };
 
   const getShareLink = () => {
     if (!userData?.certificate_hash_id) return '';
-    return `https://innovit-blockchainclub.vitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
+    return `https://innovit-2026.blockchainvitb.in/verify-certificate?id=${userData.certificate_hash_id}`;
   };
 
   const handleCopyLink = () => {
     const link = getShareLink();
     navigator.clipboard.writeText(link);
     toast.success('Link copied to clipboard!');
+  };
+
+  const handleCopyCertificateId = () => {
+    if (!userData?.certificate_hash_id) return;
+    navigator.clipboard.writeText(userData.certificate_hash_id);
+    toast.success('Certificate ID copied to clipboard!');
   };
 
   return (
@@ -418,53 +442,81 @@ const Certificate = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[#111] border border-white/10 p-8 rounded-3xl max-w-md w-full relative shadow-2xl overflow-hidden"
+              className="bg-[#111] border border-white/10 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl max-w-lg w-full relative shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               {/* Reset background glow for modal */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-[50px] pointer-events-none" />
 
               <button
                 onClick={() => setIsShareModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                className="absolute z-10 p-1 text-gray-400 transition-colors rounded-full top-3 right-3 sm:top-4 sm:right-4 hover:text-white bg-black/50"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/20">
-                  <Award className="w-8 h-8 text-yellow-500" />
+              <div className="mb-4 text-center sm:mb-6">
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 border rounded-full sm:w-16 sm:h-16 sm:mb-4 bg-yellow-500/10 border-yellow-500/20">
+                  <Award className="w-6 h-6 text-yellow-500 sm:w-8 sm:h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Share Certificate</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="mb-2 text-xl font-bold text-white sm:text-2xl">Share Certificate</h3>
+                <p className="text-xs text-gray-400 sm:text-sm">
                   Share your achievement with the world!
                 </p>
               </div>
 
-              <div className="bg-[#0a0a0f] border border-white/10 rounded-xl p-4 mb-6 relative group">
-                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider font-semibold">Verification Link</p>
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="bg-green-500/10 p-1.5 rounded-lg">
+              {/* QR Code Display */}
+              {qrCodeUrl && (
+                <div className="bg-[#0a0a0f] border border-white/10 rounded-xl p-4 sm:p-6 mb-3 sm:mb-4 flex flex-col items-center">
+                  <p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase sm:mb-3">Scan QR Code to Verify</p>
+                  <div className="p-2 bg-white rounded-lg sm:p-3">
+                    <img src={qrCodeUrl} alt="Certificate QR Code" className="w-32 h-32 sm:w-40 sm:h-40" />
+                  </div>
+                </div>
+              )}
+
+              {/* Certificate ID Box */}
+              <div className="bg-[#0a0a0f] border border-yellow-500/20 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 relative group">
+                <p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Certificate ID</p>
+                <div className="flex items-center justify-between gap-2 sm:gap-3">
+                  <p className="font-mono text-xs font-bold text-yellow-400 break-all sm:text-sm">
+                    {userData?.certificate_hash_id}
+                  </p>
+                  <button
+                    onClick={handleCopyCertificateId}
+                    className="flex-shrink-0 p-2 text-gray-400 transition-colors rounded-lg hover:bg-white/5 hover:text-white"
+                    title="Copy Certificate ID"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Verification Link Box */}
+              <div className="bg-[#0a0a0f] border border-white/10 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 relative group">
+                <p className="mb-1 text-xs font-semibold tracking-wider text-gray-500 uppercase sm:mb-2">Verification Link</p>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="bg-green-500/10 p-1.5 rounded-lg flex-shrink-0">
                     <ShieldCheck className="w-4 h-4 text-green-500" />
                   </div>
-                  <p className="text-white font-mono text-sm truncate opacity-80 group-hover:opacity-100 transition-opacity">
+                  <p className="font-mono text-xs text-white break-all transition-opacity sm:text-sm opacity-80 group-hover:opacity-100">
                     {getShareLink()}
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <button
                   onClick={handleCopyLink}
-                  className="w-full py-3.5 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+                  className="w-full py-3 sm:py-3.5 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors text-sm sm:text-base"
                 >
-                  <Copy className="w-5 h-5" />
+                  <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Copy Link</span>
                 </button>
                 <button
                   onClick={() => window.open(getShareLink(), '_blank')}
-                  className="w-full py-3.5 bg-[#white/5] border border-white/10 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
+                  className="w-full py-3 sm:py-3.5 bg-white/5 border border-white/10 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-colors text-sm sm:text-base"
                 >
-                  <ExternalLink className="w-5 h-5" />
+                  <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Open Link</span>
                 </button>
               </div>
@@ -479,35 +531,35 @@ const Certificate = () => {
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-600/5 blur-[100px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 blur-[150px] pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="relative z-10 max-w-5xl mx-auto">
         {/* Back Button */}
         <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate('/')}
-          className="mb-8 flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors group"
+          className="flex items-center gap-2 mb-8 text-yellow-400 transition-colors hover:text-yellow-300 group"
         >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
           <span className="font-semibold">Back to Home</span>
         </motion.button>
 
 
 
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 mb-6 border rounded-full bg-yellow-500/10 border-yellow-500/20"
           >
             <Award className="w-4 h-4 text-yellow-500" />
-            <span className="text-yellow-500 text-sm font-bold tracking-wider uppercase">Official Certification</span>
+            <span className="text-sm font-bold tracking-wider text-yellow-500 uppercase">Official Certification</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-r from-yellow-100 via-yellow-400 to-amber-600 mb-6 drop-shadow-sm"
+            className="mb-6 text-4xl font-black text-transparent md:text-5xl lg:text-7xl bg-clip-text bg-gradient-to-r from-yellow-100 via-yellow-400 to-amber-600 drop-shadow-sm"
           >
             Download Certificate
           </motion.h1>
@@ -516,24 +568,24 @@ const Certificate = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed"
+            className="max-w-2xl mx-auto text-base leading-relaxed text-gray-400 md:text-lg"
           >
             Validate your achievements and download your official INNOVIT 2026 participation certificates.
           </motion.p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8 items-start">
+        <div className="grid items-start gap-8 lg:grid-cols-5">
           {/* Left Side: Verification Form */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2 space-y-6"
+            className="space-y-6 lg:col-span-2"
           >
             <div className="glass-strong p-8 rounded-3xl border border-yellow-500/10 bg-[#111]/80 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
-              <div className="absolute -top-12 -right-12 w-24 h-24 bg-yellow-500/10 blur-2xl rounded-full transition-all group-hover:bg-yellow-500/20" />
+              <div className="absolute w-24 h-24 transition-all rounded-full -top-12 -right-12 bg-yellow-500/10 blur-2xl group-hover:bg-yellow-500/20" />
 
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+              <h2 className="flex items-center gap-3 mb-8 text-2xl font-bold text-white">
                 <ShieldCheck className="w-6 h-6 text-yellow-500" />
                 User Verification
               </h2>
@@ -544,7 +596,7 @@ const Certificate = () => {
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                    <Mail className="absolute w-5 h-5 -translate-y-1/2 left-4 top-1/2 text-yellow-400/50" />
                     <input
                       type="email"
                       name="email"
@@ -554,7 +606,7 @@ const Certificate = () => {
                       className="w-full pl-12 pr-4 py-4 bg-[#0a0a0f]/80 border border-yellow-500/20 rounded-2xl text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/10 transition-all font-medium"
                     />
                   </div>
-                  <p className="mt-2 text-xs text-gray-500 ml-1">Use the email you used during registration.</p>
+                  <p className="mt-2 ml-1 text-xs text-gray-500">Use the email you used during registration.</p>
                 </div>
 
                 {!userData && (
@@ -564,7 +616,7 @@ const Certificate = () => {
                         Full Name
                       </label>
                       <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                        <User className="absolute w-5 h-5 -translate-y-1/2 left-4 top-1/2 text-yellow-400/50" />
                         <input
                           type="text"
                           name="name"
@@ -581,7 +633,7 @@ const Certificate = () => {
                         Team Name
                       </label>
                       <div className="relative">
-                        <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                        <Award className="absolute w-5 h-5 -translate-y-1/2 left-4 top-1/2 text-yellow-400/50" />
                         <input
                           type="text"
                           name="team"
@@ -606,7 +658,7 @@ const Certificate = () => {
                         Full Name
                       </label>
                       <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                        <User className="absolute w-5 h-5 -translate-y-1/2 left-4 top-1/2 text-yellow-400/50" />
                         <input
                           type="text"
                           value={formData.name}
@@ -621,7 +673,7 @@ const Certificate = () => {
                         Team Name
                       </label>
                       <div className="relative">
-                        <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400/50" />
+                        <Award className="absolute w-5 h-5 -translate-y-1/2 left-4 top-1/2 text-yellow-400/50" />
                         <input
                           type="text"
                           value={formData.team}
@@ -662,14 +714,14 @@ const Certificate = () => {
               </div>
             </div>
 
-            <div className="glass-strong p-6 rounded-3xl border border-blue-500/10 bg-blue-500/5">
+            <div className="p-6 border glass-strong rounded-3xl border-blue-500/10 bg-blue-500/5">
               <div className="flex gap-4">
                 <div className="p-3 rounded-2xl bg-blue-500/10">
                   <FileText className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="text-blue-400 font-bold mb-1">Email Verification Required</h4>
-                  <p className="text-sm text-blue-200/60 leading-relaxed">
+                  <h4 className="mb-1 font-bold text-blue-400">Email Verification Required</h4>
+                  <p className="text-sm leading-relaxed text-blue-200/60">
                     You must use your registered email address to download your certificate. Manual entries are not permitted for security and authenticity.
                   </p>
                 </div>
@@ -682,10 +734,10 @@ const Certificate = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="lg:col-span-3 space-y-6"
+            className="space-y-6 lg:col-span-3"
           >
             <div className="glass-strong p-8 rounded-3xl border border-white/10 bg-[#111]/80 backdrop-blur-2xl shadow-2xl min-h-[500px] flex flex-col">
-              <h2 className="text-2xl font-bold text-white mb-8">Certificate Preview</h2>
+              <h2 className="mb-8 text-2xl font-bold text-white">Certificate Preview</h2>
 
               <AnimatePresence mode="wait">
                 {isPreviewLoading ? (
@@ -694,13 +746,13 @@ const Certificate = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex-1 flex flex-col items-center justify-center text-center p-12"
+                    className="flex flex-col items-center justify-center flex-1 p-12 text-center"
                   >
-                    <div className="w-20 h-20 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-6 relative">
+                    <div className="relative flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-yellow-500/10">
                       <Loader2 className="w-10 h-10 text-yellow-500 animate-spin" />
                     </div>
                     <h3 className="text-xl font-bold text-[#fff1ce] mb-2">Generating Actual PDF</h3>
-                    <p className="text-gray-500 max-w-xs leading-relaxed">
+                    <p className="max-w-xs leading-relaxed text-gray-500">
                       Preparing your official certificate preview using the high-resolution template...
                     </p>
                   </motion.div>
@@ -710,7 +762,7 @@ const Certificate = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="flex-1 flex flex-col"
+                    className="flex flex-col flex-1"
                   >
                     <div className="relative w-full aspect-[1.414/1] bg-[#1a1a1a] rounded-2xl border border-white/10 overflow-hidden mb-8 shadow-2xl">
                       <iframe
@@ -720,10 +772,48 @@ const Certificate = () => {
                       />
 
                       {/* Decorative border overlay */}
-                      <div className="absolute inset-0 pointer-events-none border-2 border-yellow-500/20 rounded-2xl" />
+                      <div className="absolute inset-0 border-2 pointer-events-none border-yellow-500/20 rounded-2xl" />
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Certificate ID and QR Code Section */}
+                    <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2">
+                      {/* QR Code Box */}
+                      {qrCodeUrl && (
+                        <div className="bg-[#0a0a0f] border border-white/10 rounded-xl p-4 flex flex-col items-center">
+                          <p className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Scan to Verify</p>
+                          <div className="p-2 bg-white rounded-lg">
+                            <img src={qrCodeUrl} alt="Certificate QR Code" className="w-28 h-28" />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Certificate ID Box */}
+                      <div className="bg-[#0a0a0f] border border-yellow-500/20 rounded-xl p-4 flex flex-col justify-center">
+                        <p className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Certificate ID</p>
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                          <p className="font-mono text-sm font-bold text-yellow-400 break-all">
+                            {userData?.certificate_hash_id}
+                          </p>
+                          <button
+                            onClick={handleCopyCertificateId}
+                            className="flex-shrink-0 p-2 text-gray-400 transition-colors rounded-lg hover:bg-white/5 hover:text-white"
+                            title="Copy Certificate ID"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <button
+                          onClick={handleCopyCertificateId}
+                          className="flex items-center justify-center w-full gap-2 py-2 text-xs font-semibold text-yellow-400 transition-colors border rounded-lg bg-yellow-500/10 hover:bg-yellow-500/20 border-yellow-500/20"
+                        >
+                          <Copy className="w-3 h-3" />
+                          <span>Copy ID</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-4 sm:flex-row">
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -734,12 +824,14 @@ const Certificate = () => {
                         {isGenerating ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            <span>Generating...</span>
+                            <span className="hidden sm:inline">Generating...</span>
+                            <span className="sm:hidden">Generating...</span>
                           </>
                         ) : (
                           <>
                             <Download className="w-5 h-5" />
-                            <span>Download High-Res PDF</span>
+                            <span className="hidden sm:inline">Download High-Res PDF</span>
+                            <span className="sm:hidden">Download PDF</span>
                           </>
                         )}
                       </motion.button>
@@ -747,10 +839,11 @@ const Certificate = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={handleShare}
-                        className="flex-1 bg-white/5 border border-white/10 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:bg-white/10"
+                        className="flex items-center justify-center flex-1 gap-3 py-4 font-bold text-white transition-all border bg-white/5 border-white/10 rounded-2xl hover:bg-white/10"
                       >
                         <FileText className="w-5 h-5" />
-                        Share Certificate
+                        <span className="hidden sm:inline">Share Certificate</span>
+                        <span className="sm:hidden">Share</span>
                       </motion.button>
                     </div>
                   </motion.div>
@@ -760,14 +853,14 @@ const Certificate = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex-1 flex flex-col items-center justify-center text-center p-12"
+                    className="flex flex-col items-center justify-center flex-1 p-12 text-center"
                   >
-                    <div className="w-24 h-24 rounded-full bg-yellow-500/5 flex items-center justify-center mb-6 relative">
-                      <div className="absolute inset-0 bg-yellow-500/10 rounded-full animate-pulse" />
+                    <div className="relative flex items-center justify-center w-24 h-24 mb-6 rounded-full bg-yellow-500/5">
+                      <div className="absolute inset-0 rounded-full bg-yellow-500/10 animate-pulse" />
                       <Search className="w-10 h-10 text-yellow-500/30" />
                     </div>
                     <h3 className="text-xl font-bold text-[#fff1ce] mb-2">No Certificate Selected</h3>
-                    <p className="text-gray-500 max-w-xs leading-relaxed">
+                    <p className="max-w-xs leading-relaxed text-gray-500">
                       Please enter and verify your registered email address to unlock your certificates.
                     </p>
                   </motion.div>
@@ -787,8 +880,8 @@ const Certificate = () => {
         onClick={() => navigate('/verify-certificate')}
         className="fixed bottom-8 right-8 z-50 flex items-center gap-3 px-6 py-3 rounded-full bg-[#111]/90 border border-yellow-500/30 text-yellow-500 shadow-2xl shadow-yellow-500/10 backdrop-blur-xl hover:border-yellow-500/60 hover:bg-[#111] transition-all group"
       >
-        <span className="font-bold tracking-wide text-sm uppercase">Verify Certificate</span>
-        <div className="bg-yellow-500/10 p-2 rounded-full border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+        <span className="text-sm font-bold tracking-wide uppercase">Verify Certificate</span>
+        <div className="p-2 transition-colors border rounded-full bg-yellow-500/10 border-yellow-500/20 group-hover:bg-yellow-500/20">
           <ShieldCheck className="w-5 h-5" />
         </div>
       </motion.button>
